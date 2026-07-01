@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#f28c28">
     <title>Micro:Bit Face Tracking</title>
     <link rel="manifest" href="manifest.webmanifest">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=fullscreen-round-controls-logo">
 </head>
   <body>
     <main class="app-shell">
@@ -22,13 +22,13 @@
             <img src="SP_Logo.png" alt="Singapore Polytechnic">
           </div>
           <div class="floating-tools" aria-label="Camera controls">
-            <button id="cameraButton" class="round-button is-camera-off" type="button" title="Start camera" aria-label="Start camera">
+            <button id="cameraButton" class="round-button is-camera-off" type="button" title="Start camera" aria-label="Start camera" data-fullscreen-label="Start">
               <span class="icon-camera" aria-hidden="true"></span>
             </button>
-            <button id="switchCameraButton" class="round-button" type="button" title="Switch camera" aria-label="Switch camera">
+            <button id="switchCameraButton" class="round-button" type="button" title="Switch camera" aria-label="Switch camera" data-fullscreen-label="Switch camera">
               <span class="icon-switch-camera" aria-hidden="true"></span>
             </button>
-            <button id="fullscreenButton" class="round-button" type="button" title="Fullscreen" aria-label="Fullscreen">
+            <button id="fullscreenButton" class="round-button" type="button" title="Fullscreen" aria-label="Fullscreen" data-fullscreen-label="Full-screen">
               <span class="icon-fullscreen" aria-hidden="true"></span>
             </button>
           </div>
@@ -61,6 +61,6 @@
       </section>
     </main>
 
-    <script type="module" src="app.js?v=sp-logo-inside-frame"></script>
+    <script type="module" src="app.js?v=fullscreen-round-controls-logo"></script>
   </body>
 </html>

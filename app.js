@@ -563,8 +563,9 @@ async function startCamera() {
   state.isCameraRunning = true;
   els.emptyState.hidden = true;
   els.cameraButton.classList.remove("is-camera-off");
-  els.cameraButton.title = "Stop camera";
-  els.cameraButton.setAttribute("aria-label", "Stop camera");
+  els.cameraButton.title = "Active";
+  els.cameraButton.setAttribute("aria-label", "Active");
+  els.cameraButton.dataset.fullscreenLabel = "Active";
   els.switchCameraButton.disabled = false;
   setStatus("Loading", "is-warn");
 
@@ -587,6 +588,7 @@ function stopCamera() {
   els.cameraButton.classList.add("is-camera-off");
   els.cameraButton.title = "Start camera";
   els.cameraButton.setAttribute("aria-label", "Start camera");
+  els.cameraButton.dataset.fullscreenLabel = "Start";
   els.calibrateButton.disabled = true;
   ctx.clearRect(0, 0, els.canvas.width, els.canvas.height);
   setStatus(state.rxCharacteristic ? "Ready" : "Idle");
@@ -734,8 +736,9 @@ function updateFullscreenButton() {
   const isFullscreen = Boolean(document.fullscreenElement) || state.isFullscreenFallback;
   document.body.classList.toggle("is-fullscreen-mode", isFullscreen);
   els.fullscreenButton.classList.toggle("is-active", isFullscreen);
-  els.fullscreenButton.title = isFullscreen ? "Exit fullscreen" : "Fullscreen";
-  els.fullscreenButton.setAttribute("aria-label", isFullscreen ? "Exit fullscreen" : "Fullscreen");
+  els.fullscreenButton.title = isFullscreen ? "Close full-screen" : "Full-screen";
+  els.fullscreenButton.setAttribute("aria-label", isFullscreen ? "Close full-screen" : "Full-screen");
+  els.fullscreenButton.dataset.fullscreenLabel = isFullscreen ? "Close full-screen" : "Full-screen";
   scheduleCanvasResize();
 }
 
