@@ -1,7 +1,8 @@
 const MICROBIT_UART_SERVICE = "e95d93af-251d-470a-a062-fa1922dfa9a8";
 const MICROBIT_UART_RX = "e95d93b0-251d-470a-a062-fa1922dfa9a8";
 const NORDIC_UART_SERVICE = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
-const NORDIC_UART_RX = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
+const NORDIC_UART_TX = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
+const NORDIC_UART_RX = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 const MEDIAPIPE_VERSION = "0.10.35";
 const MEDIAPIPE_WASM_URLS = [
   "./vendor/mediapipe/tasks-vision/wasm",
@@ -425,14 +426,8 @@ async function maybeSendValues(values) {
   }
 
   try {
-    const data = encoder.encode(payload);
-    if (state.rxCharacteristic.writeValueWithoutResponse) {
-      await state.rxCharacteristic.writeValueWithoutResponse(data);
-    } else if (state.rxCharacteristic.writeValueWithResponse) {
-      await state.rxCharacteristic.writeValueWithResponse(data);
-    } else {
-      await state.rxCharacteristic.writeValue(data);
-    }
+    const data = encoder.encode(payload + "\n");
+    await state.rxCharacteristic.writeValue(data);
     state.lastSentAt = now;
   } catch (error) {
     state.isSending = false;
@@ -639,8 +634,8 @@ async function switchCamera() {
 
 async function findWritableCharacteristic(server) {
   const candidates = [
-    [MICROBIT_UART_SERVICE, MICROBIT_UART_RX],
-    [NORDIC_UART_SERVICE, NORDIC_UART_RX]
+    [NORDIC_UART_SERVICE, NORDIC_UART_RX],
+    [MICROBIT_UART_SERVICE, MICROBIT_UART_RX]
   ];
 
   for (const [serviceUuid, characteristicUuid] of candidates) {
@@ -668,10 +663,9 @@ async function connectMicrobit() {
       filters: [
         { namePrefix: "BBC micro:bit" },
         { namePrefix: "micro:bit" },
-        { services: [MICROBIT_UART_SERVICE] },
-        { services: [NORDIC_UART_SERVICE] }
+        { namePrefix: "Calliope mini" }
       ],
-      optionalServices: [MICROBIT_UART_SERVICE, NORDIC_UART_SERVICE]
+      optionalServices: [NORDIC_UART_SERVICE, MICROBIT_UART_SERVICE]
     });
 
     device.addEventListener("gattserverdisconnected", () => {

@@ -4,7 +4,7 @@ This is a browser web app that tracks a user's face and sends BBC Micro:Bit UART
 
 ## Data format
 
-The app sends exactly 19 digits with no separator or newline:
+The app sends a 19-digit payload followed by a newline, matching the Lo-fi Robot app UART format:
 
 ```text
 XXYYZZYYPPMMEERRRSF
@@ -18,7 +18,7 @@ X, Y, Distance, Yaw, Pitch, Mouth, Left eye, Right eye, Roll, Smile, Face visibi
 
 Two-digit values are clamped to `00-99`. Roll and smile are `0-9`. Face visibility is `0-1`.
 
-When Bluetooth sending is enabled, the app sends the current 19-digit payload at 10 updates per second, even when the values have not changed.
+When Bluetooth sending is enabled, the app sends the current 19-digit payload plus newline at 10 updates per second, even when the values have not changed.
 
 ## Browser support
 
