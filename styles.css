@@ -1,20 +1,29 @@
 :root {
   color-scheme: dark;
-  --cardboard-950: #201610;
-  --cardboard-900: #2e2118;
-  --cardboard-800: #3b291d;
-  --cardboard-700: #5d3e27;
-  --cardboard-600: #7b5637;
-  --paper: #fff7e8;
-  --ink: #201610;
-  --orange: #f28c28;
-  --orange-deep: #f06d2f;
-  --yellow: #f8c03a;
-  --cyan: #ffd166;
-  --blue: #20a9d6;
-  --green: #45d17b;
-  --red: #ff1744;
-  --line: rgba(255, 247, 232, 0.22);
+  --sp-red: #e31b23;
+  --sp-red-deep: #b9141b;
+  --black: #080808;
+  --charcoal-950: #111111;
+  --charcoal-900: #181818;
+  --charcoal-800: #242424;
+  --charcoal-700: #343434;
+  --white: #ffffff;
+  --paper: #f7f7f7;
+  --ink: #101010;
+  --muted: rgba(255, 255, 255, 0.72);
+  --line: rgba(255, 255, 255, 0.18);
+  --green: #35d07f;
+  --red: var(--sp-red);
+  --orange: var(--sp-red);
+  --orange-deep: var(--sp-red-deep);
+  --yellow: var(--white);
+  --cyan: #ffffff;
+  --blue: var(--sp-red);
+  --cardboard-950: var(--black);
+  --cardboard-900: var(--charcoal-950);
+  --cardboard-800: var(--charcoal-800);
+  --cardboard-700: var(--charcoal-700);
+  --cardboard-600: #4a4a4a;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
@@ -30,12 +39,12 @@ body {
 body {
   margin: 0;
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px) 0 0 / 38px 38px,
-    linear-gradient(0deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px) 0 0 / 38px 38px,
-    radial-gradient(circle at 28% 12%, rgba(248, 192, 58, 0.18), transparent 28rem),
-    radial-gradient(circle at 85% 80%, rgba(240, 109, 47, 0.16), transparent 24rem),
-    var(--cardboard-900);
-  color: var(--paper);
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px) 0 0 / 38px 38px,
+    linear-gradient(0deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px) 0 0 / 38px 38px,
+    radial-gradient(circle at 18% 12%, rgba(227, 27, 35, 0.22), transparent 26rem),
+    radial-gradient(circle at 88% 80%, rgba(227, 27, 35, 0.16), transparent 24rem),
+    var(--charcoal-950);
+  color: var(--white);
 }
 
 button {
@@ -64,11 +73,11 @@ button {
 .video-frame {
   position: relative;
   overflow: hidden;
-  border: 12px solid var(--orange);
+  border: 10px solid var(--sp-red);
   border-radius: 8px;
-  background: #0f0b08;
+  background: #030303;
   aspect-ratio: 4 / 3;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 video,
@@ -98,8 +107,10 @@ canvas {
   place-content: center;
   gap: 8px;
   text-align: center;
-  background: linear-gradient(135deg, rgba(248, 192, 58, 0.18), rgba(93, 62, 39, 0.44));
-  color: rgba(255, 247, 232, 0.86);
+  background:
+    radial-gradient(circle at 50% 34%, rgba(227, 27, 35, 0.2), transparent 15rem),
+    #050505;
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .empty-state[hidden] {
@@ -144,25 +155,28 @@ canvas {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: rgba(255, 247, 232, 0.96);
-  color: var(--cardboard-800);
-  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.22);
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--ink);
+  border: 2px solid rgba(16, 16, 16, 0.82);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
   cursor: pointer;
 }
 
 .round-button.is-active {
-  color: var(--orange);
+  color: var(--ink);
 }
 
 #cameraButton {
-  background: var(--red);
-  color: white;
-  box-shadow: 0 12px 34px rgba(255, 23, 68, 0.46), 0 0 0 4px rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.98);
+  color: var(--sp-red);
+  border-color: var(--sp-red);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28), 0 0 0 3px rgba(227, 27, 35, 0.12);
 }
 
 #cameraButton:hover,
 #cameraButton:focus-visible {
-  background: #ff0033;
+  background: var(--sp-red);
+  color: var(--white);
 }
 
 .round-button:disabled {
@@ -184,7 +198,7 @@ canvas {
 
 .eyebrow {
   margin: 0 0 6px;
-  color: var(--yellow);
+  color: var(--sp-red);
   font-size: 13px;
   font-weight: 900;
   letter-spacing: 0;
@@ -203,22 +217,23 @@ h1 {
   flex: 0 0 auto;
   min-width: 86px;
   padding: 9px 12px;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 999px;
   text-align: center;
   font-size: 13px;
   font-weight: 800;
-  background: rgba(255, 247, 232, 0.08);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--white);
 }
 
 .status-pill.is-good {
-  background: rgba(69, 209, 123, 0.16);
-  border-color: rgba(69, 209, 123, 0.48);
+  background: rgba(53, 208, 127, 0.16);
+  border-color: rgba(53, 208, 127, 0.54);
 }
 
 .status-pill.is-warn {
-  background: rgba(248, 192, 58, 0.16);
-  border-color: rgba(248, 192, 58, 0.48);
+  background: rgba(227, 27, 35, 0.16);
+  border-color: rgba(227, 27, 35, 0.56);
 }
 
 .actions {
@@ -241,14 +256,16 @@ h1 {
 }
 
 .primary-action {
-  background: var(--blue);
-  color: white;
+  background: var(--sp-red);
+  color: var(--white);
+  box-shadow: 0 10px 28px rgba(227, 27, 35, 0.28);
 }
 
 .secondary-action {
-  background: var(--yellow);
+  background: var(--white);
   color: var(--ink);
-  box-shadow: 0 10px 28px rgba(248, 192, 58, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
 }
 
 .primary-action:disabled,
@@ -260,10 +277,10 @@ h1 {
 .notice {
   margin: 0 0 14px;
   padding: 12px 14px;
-  border: 1px solid rgba(248, 192, 58, 0.42);
+  border: 1px solid rgba(227, 27, 35, 0.48);
   border-radius: 8px;
-  background: rgba(248, 192, 58, 0.12);
-  color: #fff2bf;
+  background: rgba(227, 27, 35, 0.12);
+  color: rgba(255, 255, 255, 0.9);
   font-size: 14px;
   line-height: 1.35;
 }
@@ -300,7 +317,7 @@ h1 {
   display: block;
   width: 0%;
   height: 100%;
-  background: linear-gradient(90deg, var(--cyan), var(--orange));
+  background: linear-gradient(90deg, #ffffff, var(--sp-red));
   transition: width 110ms linear;
 }
 
@@ -309,7 +326,7 @@ h1 {
   padding: 2px 5px;
   border-radius: 6px;
   background: var(--paper);
-  color: var(--orange);
+  color: var(--sp-red);
   font-size: 13px;
   font-weight: 1000;
   line-height: 1.15;
@@ -390,9 +407,9 @@ h1 {
 @media (max-width: 980px) {
   body {
     background:
-      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px) 0 0 / 38px 38px,
-      linear-gradient(0deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px) 0 0 / 38px 38px,
-      var(--cardboard-900);
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px) 0 0 / 38px 38px,
+      linear-gradient(0deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px) 0 0 / 38px 38px,
+      var(--charcoal-950);
   }
 
   .app-shell {
@@ -403,7 +420,7 @@ h1 {
   }
 
   .stage {
-    background: var(--orange);
+    background: var(--sp-red);
     padding: max(14px, env(safe-area-inset-top)) clamp(14px, 5vw, 46px) 28px;
   }
 
@@ -441,14 +458,20 @@ h1 {
     top: 0;
     z-index: 4;
     padding: 10px 0;
-    background: linear-gradient(180deg, var(--cardboard-900) 78%, rgba(46, 33, 24, 0));
+    background: linear-gradient(180deg, var(--charcoal-950) 78%, rgba(17, 17, 17, 0));
   }
 
   .primary-action,
-  .secondary-action {
-    min-height: 58px;
-    font-size: 9px;
-  }
+.secondary-action {
+  min-height: 54px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 900;
+  cursor: pointer;
+}
 
   .metrics-grid {
     gap: 5px;
@@ -479,7 +502,6 @@ h1 {
     right: 12px;
     gap: 12px;
   }
-
 
   .round-button {
     width: 58px;
