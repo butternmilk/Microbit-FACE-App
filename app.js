@@ -61,6 +61,7 @@ const state = {
   cameraFacingMode: "user",
   lastVideoTime: -1,
   lastSentAt: 0,
+  showFullMeshUntil: 0,
   calibration: null,
   rawValues: null,
   recentRawValues: [],
@@ -401,11 +402,19 @@ function drawFace(result) {
   }
 
   const landmarks = result.faceLandmarks[0];
-  drawConnectorSet(landmarks, state.FaceLandmarker.FACE_LANDMARKS_TESSELATION, "rgba(255,255,255,0.32)", 1);
-  drawConnectorSet(landmarks, state.FaceLandmarker.FACE_LANDMARKS_FACE_OVAL, "rgba(255,255,255,0.94)", 4);
-  drawConnectorSet(landmarks, state.FaceLandmarker.FACE_LANDMARKS_LEFT_EYE, "#ffd166", 4);
-  drawConnectorSet(landmarks, state.FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE, "#f8c03a", 4);
-  drawConnectorSet(landmarks, state.FaceLandmarker.FACE_LANDMARKS_LIPS, "#f06d2f", 4);
+  const showFullMesh = performance.now() < state.showFullMeshUntil;
+  const detailLineWidth = showFullMesh ? 4 : 0.5;
+  const browLineWidth = showFullMesh ? 2 : 0.5;
+
+  if (showFullMesh) {
+    drawConnectorSet(landmarks, state.FaceLandmarker.FACE_LANDMARKS_TESSELATION, "rgba(255,255,255,0.5)", 0.9);
+  }
+  drawConnectorSet(landmarks, state.FaceLandmarker.FACE_LANDMARKS_FACE_OVAL, "rgba(255,255,255,0.94)", 2);
+  drawConnectorSet(landmarks, state.FaceLandmarker.FACE_LANDMARKS_LEFT_EYEBROW, "rgba(255,209,102,0.62)", browLineWidth);
+  drawConnectorSet(landmarks, state.FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW, "rgba(248,192,58,0.62)", browLineWidth);
+  drawConnectorSet(landmarks, state.FaceLandmarker.FACE_LANDMARKS_LEFT_EYE, "rgba(255,209,102,0.55)", detailLineWidth);
+  drawConnectorSet(landmarks, state.FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE, "rgba(248,192,58,0.55)", detailLineWidth);
+  drawConnectorSet(landmarks, state.FaceLandmarker.FACE_LANDMARKS_LIPS, "rgba(240,109,47,0.52)", detailLineWidth);
 }
 
 async function maybeSendValues(values) {
@@ -704,6 +713,7 @@ function calibrate() {
     return;
   }
 
+  state.showFullMeshUntil = performance.now() + 2500;
   state.calibration = averageValues(samples);
   state.values = normalizeValues(state.rawValues);
   updateMetrics(state.values);
