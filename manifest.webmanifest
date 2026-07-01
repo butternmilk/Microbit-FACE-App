@@ -1,0 +1,9 @@
+{
+  "name": "Micro:Bit Face Tracking Controller",
+  "short_name": "Face Bit",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#2e2118",
+  "theme_color": "#6f4b2f",
+  "icons": []
+}
