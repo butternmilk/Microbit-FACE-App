@@ -4,10 +4,10 @@ This is a browser web app that tracks a user's face and sends BBC Micro:Bit UART
 
 ## Data format
 
-The app sends 19 digits followed by a newline:
+The app sends exactly 19 digits with no separator or newline:
 
 ```text
-XXYYZZYYPPMMEERRRSF\n
+XXYYZZYYPPMMEERRRSF
 ```
 
 Field order:

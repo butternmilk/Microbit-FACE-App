@@ -425,7 +425,7 @@ async function maybeSendValues(values) {
   }
 
   try {
-    const data = encoder.encode(`${payload}\n`);
+    const data = encoder.encode(payload);
     if (state.rxCharacteristic.writeValueWithoutResponse) {
       await state.rxCharacteristic.writeValueWithoutResponse(data);
     } else if (state.rxCharacteristic.writeValueWithResponse) {
