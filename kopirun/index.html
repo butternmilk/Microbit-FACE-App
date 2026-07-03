@@ -1,0 +1,2452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kopi Run</title>
+<style>
+:root {
+--ink: #111111;
+--muted: #707070;
+--page: #faf7f2;
+--surface: #ffffff;
+--panel: #ffffff;
+--line: #ebe3d8;
+--line-strong: #d9cec0;
+--grab: #00b14f;
+--grab-dark: #009944;
+--grab-soft: #e8f8ef;
+--coffee: #7a4a2b;
+--coffee-soft: #f7eadb;
+--amber: #c78121;
+--amber-soft: #fff2d8;
+--cream: #d7b77a;
+--cream-soft: #fff8e8;
+--caramel: #b8682a;
+--caramel-soft: #fff0df;
+--ice: #2386b8;
+--ice-soft: #e7f7ff;
+--teal: #00545a;
+--danger: #d6453d;
+--disabled: #d8f1e3;
+--shadow: 0 12px 28px rgba(0, 0, 0, .08);
+}
+* { box-sizing: border-box; }
+body {
+margin: 0;
+min-height: 100vh;
+font-family: Arial, Helvetica, sans-serif;
+color: var(--ink);
+background:
+radial-gradient(circle at 18px 18px, rgba(122, 74, 43, .055) 0 2px, transparent 3px 100%),
+radial-gradient(circle at 84% 12%, transparent 0 24px, rgba(122, 74, 43, .08) 25px 27px, transparent 28px),
+var(--page);
+background-size: 74px 74px, 100% 100%, auto;
+padding: 0;
+}
+button, input, select { font: inherit; }
+.app {
+width: min(100%, 430px);
+min-height: 100vh;
+margin: 0 auto;
+background: var(--surface);
+border: 0;
+border-radius: 0;
+box-shadow: var(--shadow);
+overflow: hidden;
+}
+.brand-footer {
+display: grid;
+gap: 5px;
+padding: 18px 20px 16px;
+background: #f7f1e8;
+border-top: 1px solid var(--line);
+}
+.brand-lockup {
+display: flex;
+align-items: center;
+gap: 4px;
+}
+.brand-icon {
+width: 30px;
+height: 26px;
+flex: 0 0 auto;
+display: grid;
+place-items: center;
+font-size: 24px;
+line-height: 1;
+}
+h1, h2, p { margin: 0; }
+h1 {
+font-size: 24px;
+line-height: 1.08;
+color: var(--ink);
+font-weight: 900;
+letter-spacing: 0;
+}
+.brand-footer p {
+color: var(--muted);
+font-size: 13px;
+font-weight: 700;
+text-align: left;
+max-width: none;
+}
+main {
+display: grid;
+gap: 0;
+padding: 0;
+background: var(--surface);
+}
+.stack { display: grid; gap: 0; }
+.order-form,
+.order-lists {
+display: grid;
+gap: 0;
+}
+.order-lists {
+display: none;
+min-height: calc(100vh - 74px);
+align-content: start;
+}
+.order-lists .brand-footer {
+grid-column: 1 / -1;
+}
+.app.order-list-open .order-form {
+display: none;
+}
+.app.order-list-open .order-lists {
+display: grid;
+}
+.app.order-list-open main {
+display: block;
+}
+@media (max-width: 759px) {
+.app.no-drink-selected .order-form {
+min-height: 100vh;
+align-content: center;
+}
+.app.no-drink-selected .drink-panel {
+padding-top: 18px;
+padding-bottom: 18px;
+}
+}
+.panel {
+background: var(--panel);
+border: 0;
+border-radius: 0;
+padding: 7px 5px;
+box-shadow: none;
+}
+.step-panel {
+display: none;
+animation: step-in .18s ease;
+}
+.step-panel.revealed {
+display: block;
+}
+.flow-dimmed {
+opacity: .5;
+}
+@keyframes step-in {
+from { opacity: 0; transform: translateY(6px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.panel.tint {
+background: #f9fcf9;
+border-color: var(--line);
+}
+label, .label, .section-title {
+display: block;
+margin-bottom: 5px;
+color: var(--ink);
+font-size: 8px;
+line-height: 1;
+font-weight: 900;
+text-transform: uppercase;
+letter-spacing: 0;
+}
+.label::before,
+.section-title::before,
+label[for="nameInput"]::before,
+label[for="softDrinkInput"]::before,
+label[for="remarkInput"]::before {
+content: "\2615";
+display: inline-block;
+width: auto;
+height: auto;
+margin-right: 4px;
+vertical-align: -1px;
+font-size: 11px;
+line-height: 1;
+opacity: .72;
+}
+.section-title::before {
+font-size: 16px;
+margin-right: 6px;
+}
+input[type="text"], select {
+width: 100%;
+min-height: 60px;
+border: 1px solid var(--line-strong);
+border-radius: 12px;
+padding: 8px 14px;
+background: var(--surface);
+color: var(--ink);
+outline: none;
+font-size: 32px;
+font-weight: 500;
+text-align: center;
+}
+input[type="text"]:focus, select:focus {
+border-color: var(--grab);
+box-shadow: 0 0 0 3px rgba(0, 177, 79, .16);
+}
+input[type="text"]::placeholder {
+color: rgba(17, 17, 17, .2);
+opacity: 1;
+}
+#remarkInput {
+font-size: 20px;
+min-height: 30px;
+}
+.drink-grid {
+display: grid;
+grid-template-columns: repeat(3, minmax(0, 1fr));
+gap: 7px;
+}
+.drink-card {
+position: relative;
+min-width: 0;
+min-height: 126px;
+padding: 15px 6px 12px;
+border: 1px solid rgba(122, 74, 43, .08);
+border-radius: 8px;
+background: #f7f7f7;
+color: var(--ink);
+cursor: pointer;
+box-shadow: 0 3px 8px rgba(38, 25, 15, .11);
+transition: transform .18s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease, opacity .18s ease;
+}
+.drink-card:nth-child(1) { --card-accent: #7a4a2b; --card-active: #ead7c1; --card-glow: rgba(122, 74, 43, .24); --card-ring: rgba(122, 74, 43, .13); background: #f8ead8; }
+.drink-card:nth-child(2) { --card-accent: #d36d16; --card-active: #ffdca8; --card-glow: rgba(211, 109, 22, .24); --card-ring: rgba(211, 109, 22, .13); background: #fff0cf; }
+.drink-card:nth-child(3) { --card-accent: #8b5b6a; --card-active: #e9d6df; --card-glow: rgba(139, 91, 106, .24); --card-ring: rgba(139, 91, 106, .13); background: #f4e8ee; }
+.drink-card:nth-child(4) { --card-accent: #d45d78; --card-active: #f6d7e1; --card-glow: rgba(212, 93, 120, .24); --card-ring: rgba(212, 93, 120, .13); background: #ffe7ef; }
+.drink-card:nth-child(5) { --card-accent: #248765; --card-active: #d0eee1; --card-glow: rgba(36, 135, 101, .24); --card-ring: rgba(36, 135, 101, .13); background: #e5f7ef; }
+.drink-card:nth-child(6) { --card-accent: #4f86ad; --card-active: #d8eaf6; --card-glow: rgba(79, 134, 173, .22); --card-ring: rgba(79, 134, 173, .13); background: #edf6fb; }
+.drink-card:hover {
+transform: translateY(-1px);
+box-shadow: 0 5px 12px rgba(38, 25, 15, .13);
+}
+.drink-card .drink-art {
+display: block;
+width: 100%;
+max-width: 78px;
+height: 76px;
+object-fit: contain;
+margin: 0 auto 12px;
+pointer-events: none;
+filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .10));
+}
+.drink-card span {
+display: block;
+min-height: 24px;
+color: var(--ink);
+font-size: 12px;
+line-height: 1.05;
+font-weight: 900;
+text-transform: uppercase;
+overflow-wrap: anywhere;
+}
+.drink-card.active {
+border-color: rgba(122, 74, 43, .18);
+background: var(--card-active);
+box-shadow: 0 4px 14px var(--card-glow), 0 0 0 3px var(--card-ring);
+transform: translateY(-2px) scale(1.02);
+z-index: 2;
+}
+.drink-card.active::after {
+content: "\2713";
+position: absolute;
+top: 7px;
+right: 7px;
+display: grid;
+place-items: center;
+width: 20px;
+height: 20px;
+border-radius: 50%;
+background: var(--card-accent);
+color: #fff;
+font-size: 13px;
+font-weight: 900;
+box-shadow: 0 2px 5px rgba(0, 0, 0, .14);
+}
+.drink-card.just-selected .drink-art {
+animation: icon-bounce .2s ease;
+}
+@keyframes icon-bounce {
+0% { transform: translateY(0) scale(1); }
+50% { transform: translateY(-3px) scale(1.07); }
+100% { transform: translateY(0) scale(1); }
+}
+.compact-grid {
+display: grid;
+grid-template-columns: repeat(3, minmax(0, 1fr));
+gap: 4px;
+}
+.compact-grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.sugar-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.sugar-grid .sugar[data-sugar=""] { grid-column: span 2; }
+small { font-size: .5em; }
+.option {
+position: relative;
+min-height: 42px;
+height: 42px;
+border: 1px solid var(--line-strong);
+border-radius: 12px;
+background: var(--surface);
+color: var(--ink);
+padding: 5px 3px;
+font-size: 20px;
+font-weight: 500;
+cursor: pointer;
+box-shadow: 0 2px 5px rgba(38, 25, 15, .06);
+transition: background .15s, border-color .15s, color .15s, opacity .15s, box-shadow .15s, transform .15s;
+}
+.compact-grid.four .option { font-size: 20px; }
+.option.active {
+border-color: var(--accent-border, var(--grab));
+background: var(--accent-soft, var(--grab-soft));
+color: var(--accent-ink, #006b31);
+box-shadow: 0 0 0 2px var(--accent-ring, rgba(0, 177, 79, .12)), 0 3px 8px rgba(38, 25, 15, .08);
+transform: scale(1.02);
+z-index: 2;
+}
+.thickness.active,
+.milk.active,
+.sugar.active,
+.milo-thickness.active,
+.milo-sugar.active {
+transform: scale(1.1);
+}
+.drink-panel { --accent: var(--coffee); --accent-soft: var(--coffee-soft); --accent-ink: #5f351f; --accent-border: #b59279; --accent-ring: rgba(122, 74, 43, .14); }
+.thickness-panel { --accent: var(--amber); --accent-soft: var(--amber-soft); --accent-ink: #80500f; --accent-border: #d9ad64; --accent-ring: rgba(199, 129, 33, .14); }
+.milk-panel { --accent: var(--cream); --accent-soft: var(--cream-soft); --accent-ink: #745b25; --accent-border: #e2ca95; --accent-ring: rgba(215, 183, 122, .16); }
+.sugar-panel { --accent: var(--caramel); --accent-soft: var(--caramel-soft); --accent-ink: #874a1f; --accent-border: #d19a70; --accent-ring: rgba(184, 104, 42, .14); }
+.ice-panel {
+background: #fff2ea;
+}
+.ice-panel .checkbox-row {
+width: 100%;
+}
+.name-entry-row {
+display: grid;
+grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+gap: 4px;
+align-items: stretch;
+}
+.name-entry-row .checkbox-row {
+min-height: 60px;
+padding: 5px 4px;
+font-size: 13px;
+justify-content: center;
+}
+.name-entry-row .checkbox-row .ice-art {
+width: 22px;
+height: 22px;
+}
+.emphasis-option {
+font-weight: 900;
+}
+.legend-mode .milk {
+font-size: 12px;
+font-weight: 500;
+line-height: 1.05;
+}
+.legend-mode .sugar:not([data-sugar=""]) {
+font-size: 12px;
+font-weight: 500;
+line-height: 1.05;
+}
+.legend-mode .milo-sugar:not([data-milo-sugar=""]) {
+font-size: 12px;
+font-weight: 500;
+line-height: 1.05;
+}
+.order-controls {
+display: grid;
+grid-template-columns: minmax(0, .9fr) minmax(0, 1.25fr);
+gap: 3px;
+align-items: stretch;
+padding: 6px 4px;
+background: #fff2ea;
+}
+.order-controls.step-panel {
+display: none;
+}
+.step-panel.revealed {
+display: grid;
+}
+.action-panel {
+padding: 6px 4px;
+background: #fff2ea;
+}
+.checkbox-row {
+display: flex;
+align-items: center;
+gap: 4px;
+min-height: 50px;
+margin: 0;
+padding: 5px 5px;
+border: 1px solid var(--line-strong);
+border-radius: 12px;
+background: var(--surface);
+color: var(--ink);
+font-size: 13px;
+font-weight: 500;
+text-transform: none;
+cursor: pointer;
+}
+.checkbox-row .ice-art {
+width: 34px;
+height: 30px;
+object-fit: contain;
+flex: 0 0 auto;
+}
+.checkbox-row span {
+line-height: 1.05;
+white-space: nowrap;
+text-transform: none;
+}
+.checkbox-row input {
+width: 18px;
+height: 18px;
+accent-color: var(--grab);
+flex: 0 0 auto;
+}
+.primary {
+width: 100%;
+min-height: 50px;
+border: 0;
+border-radius: 12px;
+padding: 12px 14px;
+background: var(--grab);
+color: #fff;
+font-size: 16px;
+font-weight: 500;
+cursor: pointer;
+box-shadow: 0 8px 18px rgba(0, 177, 79, .24);
+transition: background .15s, opacity .15s, color .15s, transform .15s;
+}
+.checkbox-row:has(input:checked) {
+border-color: #8bc8e4;
+background: var(--ice-soft);
+box-shadow: 0 0 0 2px rgba(35, 134, 184, .14), 0 3px 8px rgba(38, 25, 15, .08);
+color: #155f83;
+transform: scale(1.1);
+position: relative;
+z-index: 2;
+}
+.checkbox-row input {
+accent-color: var(--ice);
+}
+.primary:hover { background: var(--grab-dark); }
+.primary:active { transform: translateY(1px); }
+.primary.submitted {
+background: #12c86a;
+color: #fff;
+opacity: 1;
+box-shadow: 0 8px 18px rgba(0, 177, 79, .28);
+}
+.export-strip {
+display: flex;
+justify-content: center;
+align-items: center;
+gap: 14px;
+flex-wrap: wrap;
+padding: 4px 4px 8px;
+background: var(--surface);
+}
+.export-toggle,
+.clear-toggle {
+border: 0;
+background: transparent;
+color: rgba(17, 17, 17, .48);
+font-size: 11px;
+font-weight: 500;
+text-decoration: underline;
+cursor: pointer;
+padding: 3px 4px;
+}
+.clear-toggle { color: rgba(214, 69, 61, .62); }
+.history-panel {
+display: grid;
+gap: 12px;
+}
+.summary-section { background: #f2faf4; }
+.checklist-section { background: #f7f8ff; }
+.history-section { background: #fff9e8; }
+.history-head {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 10px;
+}
+.history-head .section-title {
+margin: 0;
+flex: 1 1 auto;
+}
+.section-head {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 10px;
+margin-bottom: 12px;
+}
+.section-head .section-title {
+margin: 0;
+min-width: 0;
+}
+.spotlight-toggle,
+.spotlight-exit {
+border: 1px solid rgba(122, 74, 43, .18);
+border-radius: 999px;
+background: #fff;
+color: rgba(17, 17, 17, .72);
+font-size: 11px;
+font-weight: 500;
+line-height: 1;
+cursor: pointer;
+white-space: nowrap;
+box-shadow: 0 2px 5px rgba(38, 25, 15, .07);
+}
+.spotlight-toggle {
+padding: 7px 9px;
+}
+.spotlight-exit {
+display: none;
+margin-bottom: 12px;
+padding: 10px 12px;
+background: #fff8e8;
+color: #5f351f;
+min-height: 38px;
+align-self: start;
+justify-self: start;
+}
+.app.spotlight-mode {
+min-height: 100vh;
+}
+.app.spotlight-mode main {
+display: block;
+}
+.app.spotlight-mode .stack[aria-label="Order form"],
+.app.spotlight-mode #emptyState,
+.app.spotlight-mode .export-strip,
+.app.spotlight-mode .brand-footer {
+display: none;
+}
+.app.spotlight-mode .spotlight-panel {
+display: none !important;
+}
+.app.spotlight-mode[data-spotlight="summary"] #summaryCard,
+.app.spotlight-mode[data-spotlight="checklist"] #checklistSection,
+.app.spotlight-mode[data-spotlight="history"] #historyPanel {
+display: grid !important;
+min-height: 100vh;
+padding: 18px 16px;
+border-bottom: 0;
+align-content: start;
+}
+.app.spotlight-mode[data-spotlight="checklist"] #checklistSection {
+display: block !important;
+}
+.app.spotlight-mode .spotlight-exit {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+justify-self: start;
+}
+.app.spotlight-mode .spotlight-toggle {
+display: none;
+}
+.app.spotlight-mode .person-list,
+.app.spotlight-mode .history-list {
+max-height: none;
+}
+.app.spotlight-mode .counter-group,
+.app.spotlight-mode .person-card,
+.app.spotlight-mode .history-stat {
+box-shadow: 0 2px 7px rgba(38, 25, 15, .08);
+}
+.history-total {
+color: var(--muted);
+font-size: 12px;
+font-weight: 900;
+white-space: nowrap;
+}
+.history-filters {
+display: grid;
+grid-template-columns: repeat(4, minmax(0, 1fr));
+gap: 4px;
+}
+.history-filter {
+min-height: 38px;
+border: 1px solid var(--line-strong);
+border-radius: 999px;
+background: var(--surface);
+color: var(--ink);
+font-size: 12px;
+font-weight: 500;
+cursor: pointer;
+}
+.history-filter.active {
+border-color: var(--grab);
+background: var(--grab-soft);
+color: #006b31;
+}
+.history-stats {
+display: grid;
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap: 4px;
+}
+.history-stat {
+border: 1px solid var(--line);
+border-radius: 14px;
+background: #fbfbfb;
+padding: 8px 7px;
+min-width: 0;
+}
+.history-stat strong {
+display: block;
+font-size: 20px;
+line-height: 1;
+font-weight: 900;
+}
+.history-stat span {
+display: block;
+margin-top: 5px;
+color: var(--muted);
+font-size: 11px;
+font-weight: 800;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+.history-list {
+max-height: 220px;
+}
+.history-actions {
+display: flex;
+justify-content: flex-end;
+}
+.secondary {
+min-height: 46px;
+border: 0;
+border-radius: 999px;
+padding: 10px 16px;
+background: var(--grab);
+color: #fff;
+font-size: 15px;
+font-weight: 500;
+cursor: pointer;
+white-space: nowrap;
+}
+.view-orders {
+display: flex;
+gap: 12px;
+align-items: center;
+justify-content: center;
+justify-items: center;
+padding: 2px 5px 10px;
+background: #fff2ea;
+}
+.summary-link,
+.legend-link {
+border: 0;
+background: transparent;
+color: rgba(17, 17, 17, .46);
+font-size: 12px;
+font-weight: 600;
+text-decoration: underline;
+cursor: pointer;
+padding: 4px 8px;
+}
+.legend-link.active {
+color: rgba(0, 177, 79, .92);
+text-decoration-thickness: 2px;
+}
+.list-topbar {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 10px;
+padding: 10px 8px;
+background: #f7f1e8;
+border-bottom: 1px solid var(--line);
+}
+.list-topbar h2 {
+font-size: 18px;
+font-weight: 900;
+}
+.back-button {
+border: 1px solid rgba(17, 17, 17, .14);
+border-radius: 999px;
+background: #fff;
+color: var(--ink);
+font-size: 13px;
+font-weight: 700;
+padding: 9px 12px;
+cursor: pointer;
+}
+.section-title { font-size: 18px; }
+.counter-groups {
+display: grid;
+gap: 10px;
+}
+.counter-group {
+border: 1px solid var(--line);
+border-radius: 14px;
+background: #fbfbfb;
+padding: 10px 8px;
+}
+.counter-heading {
+display: inline-block;
+margin-bottom: 6px;
+color: var(--grab-dark);
+font-size: 13px;
+font-weight: 900;
+text-transform: uppercase;
+letter-spacing: .02em;
+}
+.counter-items {
+margin: 0;
+padding-left: 18px;
+font-size: 17px;
+line-height: 1.32;
+font-weight: 900;
+color: var(--ink);
+}
+.counter-items li + li { margin-top: 4px; }
+.person-list {
+list-style: none;
+padding: 0;
+margin: 0;
+display: grid;
+gap: 4px;
+max-height: 180px;
+overflow: auto;
+padding-right: 2px;
+}
+.person-card {
+display: grid;
+grid-template-columns: minmax(0, 1fr) auto;
+gap: 8px;
+align-items: center;
+border: 1px solid var(--line);
+border-radius: 14px;
+padding: 9px 8px;
+background: #fbfbfb;
+}
+.drink-name {
+font-size: 15px;
+font-weight: 900;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+.meta {
+margin-top: 3px;
+color: var(--muted);
+font-size: 12px;
+font-weight: 700;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+.remove {
+border: 0;
+background: transparent;
+color: var(--danger);
+font-size: 18px;
+line-height: 1;
+font-weight: 900;
+cursor: pointer;
+padding: 6px 2px;
+min-width: 28px;
+}
+.empty {
+color: var(--muted);
+font-size: 13px;
+font-weight: 800;
+text-align: center;
+padding: 18px 10px;
+}
+.hidden { display: none !important; }
+@media (min-width: 760px) {
+.app { width: min(100%, 760px); }
+main { grid-template-columns: 1fr; }
+.order-lists { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.order-lists .list-topbar,
+.order-lists #emptyState,
+.order-lists .export-strip,
+.order-lists #historyPanel,
+.order-lists .brand-footer { grid-column: 1 / -1; }
+.order-controls { grid-column: 1; }
+.drink-card { min-height: 108px; }
+.drink-card .drink-art { max-width: 86px; height: 84px; }
+.drink-card span { font-size: 13px; }
+}
+@media (max-width: 360px) {
+h1 { font-size: 22px; }
+.brand-footer p { font-size: 12px; }
+main { padding: 0; gap: 0; }
+.panel { padding: 6px 4px; }
+.order-controls { padding: 6px 4px; gap: 3px; }
+.drink-grid { gap: 5px; }
+input[type="text"], select { min-height: 54px; font-size: 28px; }
+.drink-card { min-height: 108px; padding: 12px 4px 9px; }
+.drink-card span { font-size: 10px; }
+.drink-card .drink-art { height: 66px; max-width: 68px; margin-bottom: 10px; }
+.option { min-height: 38px; font-size: 16px; }
+.compact-grid.four .option { font-size: 16px; padding-inline: 2px; }
+.history-stats { grid-template-columns: 1fr; }
+.checkbox-row { font-size: 13px; }
+.primary { font-size: 16px; }
+}
+
+/* Polished kopitiam theme inspired by the supplied colour mockup. */
+:root {
+--ink: #2f1a13;
+--muted: #8b7565;
+--page: #f8efe1;
+--surface: #fffaf1;
+--panel: rgba(255, 250, 241, .94);
+--line: #ead9c6;
+--line-strong: #dfbea2;
+--grab: #2f9b91;
+--grab-dark: #197a72;
+--grab-soft: #d7eee8;
+--coffee: #5a2d1f;
+--coffee-soft: #fff2dc;
+--amber: #ef7b32;
+--amber-soft: #fff0d4;
+--cream: #b99962;
+--cream-soft: #fff7e8;
+--caramel: #c56b38;
+--caramel-soft: #ffe4dc;
+--ice: #72c9d5;
+--ice-soft: #e8f6f4;
+--teal: #71c6b6;
+--danger: #d85c47;
+--shadow: 0 18px 48px rgba(91, 48, 28, .16);
+}
+body {
+background:
+radial-gradient(circle at 12% 8%, #efb06c 0 2px, transparent 3px),
+radial-gradient(circle at 88% 15%, #7eb9a2 0 2px, transparent 3px),
+radial-gradient(circle at 18% 45%, #e09b42 0 2px, transparent 3px),
+radial-gradient(circle at 82% 55%, #d57a48 0 2px, transparent 3px),
+linear-gradient(140deg, #fffaf1 0%, #f7ecd9 48%, #f3e7d3 100%);
+background-size: 92px 92px, 80px 80px, 72px 72px, 86px 86px, auto;
+}
+.app {
+position: relative;
+width: min(100%, 484px);
+background: var(--surface);
+border: 1px solid rgba(223, 190, 162, .76);
+box-shadow: var(--shadow);
+}
+.app::before,
+.app::after {
+content: "";
+position: absolute;
+z-index: 0;
+pointer-events: none;
+}
+.app::before {
+top: -26px;
+left: -20px;
+width: 128px;
+height: 76px;
+border-radius: 0 0 38px 0;
+background: #ec9168;
+}
+.app::after {
+right: -38px;
+bottom: -28px;
+width: 154px;
+height: 128px;
+border-radius: 64px 0 0 0;
+background: #71c6b6;
+box-shadow: -390px 28px 0 -42px #f5bd65, 18px -28px 0 -72px #ec9168;
+}
+main {
+position: relative;
+z-index: 1;
+background: transparent;
+}
+.order-form,
+.order-lists {
+position: relative;
+padding: 46px 22px 0;
+gap: 11px;
+}
+.order-form::before {
+content: "";
+position: absolute;
+top: 24px;
+right: 18px;
+width: 72px;
+height: 54px;
+background:
+linear-gradient(35deg, transparent 48%, #f5a736 49% 64%, transparent 65%),
+linear-gradient(35deg, transparent 33%, #f5a736 34% 49%, transparent 50%),
+linear-gradient(35deg, transparent 17%, #f5a736 18% 33%, transparent 34%),
+#79c9bf;
+border-radius: 38px 0 0 34px;
+opacity: .95;
+pointer-events: none;
+transform: rotate(18deg);
+}
+.panel {
+position: relative;
+background: var(--panel);
+border: 1px solid rgba(223, 190, 162, .44);
+border-radius: 14px;
+padding: 11px 0;
+box-shadow: none;
+}
+.drink-panel,
+#modifiersSection,
+#nameSection,
+.order-controls,
+.action-panel,
+.view-orders {
+border: 0;
+background: transparent;
+padding-left: 0;
+padding-right: 0;
+}
+label, .label, .section-title {
+margin-bottom: 9px;
+font-size: 12px;
+line-height: 1.1;
+color: #2d1d17;
+letter-spacing: 0;
+}
+.label::before,
+.section-title::before,
+label[for="nameInput"]::before,
+label[for="softDrinkInput"]::before,
+label[for="remarkInput"]::before {
+content: "";
+display: none;
+}
+input[type="text"], select {
+min-height: 64px;
+border: 1px solid #d8a77e;
+border-radius: 15px;
+background: rgba(255, 253, 247, .92);
+color: #3b2016;
+font-size: 30px;
+font-weight: 900;
+box-shadow: inset 0 1px 0 rgba(255, 255, 255, .75), 0 4px 10px rgba(91, 48, 28, .05);
+}
+input[type="text"]:focus, select:focus {
+border-color: var(--grab);
+box-shadow: 0 0 0 4px rgba(47, 155, 145, .16);
+}
+input[type="text"]::placeholder {
+color: rgba(47, 26, 19, .34);
+}
+.drink-grid {
+gap: 13px;
+}
+.drink-card {
+min-height: 132px;
+padding: 13px 8px 12px;
+border: 1px solid rgba(224, 196, 158, .42);
+border-radius: 13px;
+box-shadow: 0 8px 18px rgba(91, 48, 28, .08), inset 0 1px 0 rgba(255, 255, 255, .62);
+}
+.drink-card::before {
+content: "";
+position: absolute;
+top: 16px;
+left: 17px;
+width: 6px;
+height: 6px;
+border-radius: 50%;
+background: var(--card-accent);
+opacity: .58;
+}
+.drink-card:nth-child(1) { --card-accent: #d89a25; --card-active: #fff1cf; --card-glow: rgba(216, 154, 37, .22); --card-ring: rgba(216, 154, 37, .15); background: #fff4dc; }
+.drink-card:nth-child(2) { --card-accent: #ef7b32; --card-active: #ffe7c2; --card-glow: rgba(239, 123, 50, .24); --card-ring: rgba(239, 123, 50, .16); background: #fff1d7; }
+.drink-card:nth-child(3) { --card-accent: #6cae9e; --card-active: #d7eee8; --card-glow: rgba(108, 174, 158, .24); --card-ring: rgba(108, 174, 158, .18); background: #e1f0eb; }
+.drink-card:nth-child(4) { --card-accent: #8ab36c; --card-active: #e8f3de; --card-glow: rgba(138, 179, 108, .22); --card-ring: rgba(138, 179, 108, .16); background: #edf6df; }
+.drink-card:nth-child(5) { --card-accent: #2f9b91; --card-active: #d7eee8; --card-glow: rgba(47, 155, 145, .24); --card-ring: rgba(47, 155, 145, .16); background: #e7f3ed; }
+.drink-card:nth-child(6) { --card-accent: #ef7b32; --card-active: #ffe4dc; --card-glow: rgba(239, 123, 50, .2); --card-ring: rgba(239, 123, 50, .14); background: #ffece4; }
+.drink-card:hover {
+transform: translateY(-2px);
+box-shadow: 0 12px 24px rgba(91, 48, 28, .13);
+}
+.drink-card .drink-art {
+max-width: 84px;
+height: 78px;
+margin-bottom: 9px;
+filter: drop-shadow(0 8px 8px rgba(91, 48, 28, .18));
+}
+.drink-card span {
+min-height: 24px;
+font-size: 14px;
+line-height: 1.05;
+color: #281711;
+}
+.drink-card.active {
+border-color: rgba(47, 155, 145, .38);
+box-shadow: 0 10px 24px var(--card-glow), 0 0 0 3px var(--card-ring);
+}
+.option {
+height: 41px;
+min-height: 41px;
+border-color: rgba(223, 190, 162, .72);
+border-radius: 13px;
+background: rgba(255, 250, 241, .9);
+font-size: 14px;
+font-weight: 900;
+box-shadow: 0 4px 10px rgba(91, 48, 28, .06);
+}
+.compact-grid,
+.history-filters,
+.history-stats {
+gap: 13px;
+}
+.option.active {
+background: var(--grab);
+border-color: var(--grab);
+color: #fff;
+box-shadow: 0 9px 18px rgba(47, 155, 145, .24);
+}
+.thickness.active,
+.milk.active,
+.sugar.active,
+.checkbox-row:has(input:checked) {
+transform: none;
+}
+.name-entry-row {
+grid-template-columns: minmax(0, .92fr) minmax(0, 2.08fr);
+gap: 13px;
+}
+.checkbox-row {
+min-height: 50px;
+gap: 8px;
+border-color: rgba(223, 190, 162, .72);
+border-radius: 13px;
+background: rgba(255, 250, 241, .9);
+font-size: 15px;
+font-weight: 900;
+box-shadow: 0 4px 10px rgba(91, 48, 28, .06);
+}
+.checkbox-row .ice-art {
+width: 32px;
+height: 30px;
+filter: drop-shadow(0 3px 4px rgba(55, 137, 153, .18));
+}
+.primary,
+.secondary {
+border-radius: 13px;
+background: linear-gradient(180deg, #ff9745 0%, #ef6f28 100%);
+font-size: 18px;
+font-weight: 900;
+box-shadow: 0 12px 20px rgba(239, 111, 40, .25);
+}
+.primary:hover,
+.secondary:hover {
+background: linear-gradient(180deg, #ff8c38 0%, #df5d1d 100%);
+}
+.primary.submitted {
+background: var(--grab);
+box-shadow: 0 10px 20px rgba(47, 155, 145, .26);
+}
+.summary-link,
+.legend-link,
+.export-toggle,
+.clear-toggle {
+color: rgba(47, 26, 19, .58);
+font-weight: 800;
+}
+.legend-link.active {
+color: var(--grab-dark);
+}
+.brand-footer {
+position: relative;
+z-index: 1;
+justify-items: center;
+gap: 2px;
+margin-top: 18px;
+padding: 18px 20px 18px;
+background: transparent;
+border-top: 0;
+}
+.brand-footer::before {
+content: "";
+position: absolute;
+inset: 0;
+z-index: -1;
+background:
+radial-gradient(circle at 0 100%, #f5bd65 0 64px, transparent 65px),
+radial-gradient(circle at 100% 100%, #71c6b6 0 78px, transparent 79px);
+}
+.brand-lockup {
+justify-content: center;
+gap: 8px;
+}
+.brand-icon {
+width: 38px;
+height: 34px;
+font-size: 31px;
+}
+h1 {
+font-family: Georgia, "Times New Roman", serif;
+font-size: 38px;
+font-style: italic;
+line-height: 1;
+color: #3b2016;
+}
+.brand-footer p {
+font-size: 13px;
+font-style: italic;
+font-weight: 700;
+color: #4e372b;
+text-align: center;
+}
+.list-topbar,
+.summary-section,
+.checklist-section,
+.history-section,
+.history-stat,
+.counter-group,
+.person-card,
+.empty {
+background: rgba(255, 250, 241, .9);
+border-color: rgba(223, 190, 162, .58);
+}
+.counter-heading {
+color: var(--grab-dark);
+}
+.history-filter.active {
+border-color: var(--grab);
+background: var(--grab);
+color: #fff;
+}
+@media (min-width: 760px) {
+.app { width: min(100%, 760px); }
+.order-form,
+.order-lists { padding-inline: 28px; }
+.drink-card { min-height: 132px; }
+.drink-card .drink-art { max-width: 94px; height: 86px; }
+}
+@media (max-width: 360px) {
+.order-form,
+.order-lists { padding: 42px 16px 0; }
+.drink-grid,
+.compact-grid,
+.name-entry-row { gap: 9px; }
+.drink-card { min-height: 118px; }
+.drink-card span { font-size: 12px; }
+.drink-card .drink-art { height: 66px; max-width: 70px; }
+.option { font-size: 12px; padding-inline: 2px; }
+h1 { font-size: 32px; }
+}
+
+/* Professional alignment pass inspired by compact food-ordering apps. */
+:root {
+--ink: #251f1c;
+--muted: #756b63;
+--page: #d8eee8;
+--surface: #fffaf0;
+--panel: #fffaf0;
+--line: #dfd2c2;
+--line-strong: #c9b6a5;
+--grab: #6fbdae;
+--grab-dark: #3b9488;
+--grab-soft: #e4f4f0;
+--coffee: #8d7665;
+--coffee-soft: #f2e8dc;
+--amber: #b77b32;
+--amber-soft: #f8ead3;
+--cream: #ccb99f;
+--cream-soft: #f6efe6;
+--caramel: #b07b45;
+--caramel-soft: #f4e5d2;
+--shadow: 0 16px 36px rgba(64, 82, 76, .16);
+}
+body {
+background:
+radial-gradient(circle at 14% 8%, rgba(255, 250, 240, .74) 0 92px, transparent 93px),
+linear-gradient(145deg, #c8e7df 0%, #dff1ec 46%, #f2eadf 100%);
+}
+.app {
+width: min(100%, 430px);
+border: 0;
+border-radius: 18px 18px 0 0;
+background: var(--surface);
+box-shadow: var(--shadow);
+overflow: hidden;
+}
+.app::before,
+.app::after,
+.order-form::before {
+display: none;
+}
+.order-form,
+.order-lists {
+padding: 14px 8px 0;
+gap: 12px;
+}
+.app-brand {
+position: relative;
+display: flex;
+align-items: center;
+gap: 10px;
+margin: -14px -8px 0;
+padding: 12px 14px;
+border: 0;
+border-radius: 18px 18px 0 0;
+background: var(--grab);
+}
+.app-logo {
+width: 44px;
+height: 44px;
+border-radius: 0;
+object-fit: contain;
+box-shadow: none;
+}
+.app-brand-text {
+min-width: 0;
+flex: 1 1 auto;
+display: grid;
+gap: 2px;
+}
+.app-brand-title {
+color: #fffaf0;
+font-size: 24px;
+line-height: 1;
+font-weight: 900;
+}
+.app-brand-subtitle {
+color: rgba(255, 250, 240, .86);
+font-size: 12px;
+line-height: 1.25;
+font-weight: 700;
+}
+.brand-menu-button {
+flex: 0 0 auto;
+display: grid;
+place-items: center;
+width: 38px;
+height: 38px;
+border: 0;
+border-radius: 12px;
+background: rgba(255, 250, 240, .18);
+color: #fffaf0;
+cursor: pointer;
+}
+.brand-menu-icon {
+position: relative;
+display: block;
+width: 18px;
+height: 14px;
+}
+.brand-menu-icon::before,
+.brand-menu-icon::after,
+.brand-menu-icon span {
+content: "";
+position: absolute;
+left: 0;
+width: 18px;
+height: 2px;
+border-radius: 99px;
+background: currentColor;
+}
+.brand-menu-icon::before { top: 0; }
+.brand-menu-icon span { top: 6px; }
+.brand-menu-icon::after { bottom: 0; }
+.brand-menu {
+position: absolute;
+top: calc(100% + 8px);
+right: 8px;
+z-index: 10;
+display: grid;
+min-width: 210px;
+padding: 6px;
+border: 1px solid rgba(37, 31, 28, .1);
+border-radius: 14px;
+background: #fffaf0;
+box-shadow: 0 18px 34px rgba(37, 31, 28, .18);
+}
+.brand-menu[hidden] {
+display: none;
+}
+.brand-menu-item {
+min-height: 42px;
+border: 0;
+border-radius: 10px;
+background: transparent;
+color: var(--ink);
+font-size: 14px;
+font-weight: 800;
+text-align: left;
+padding: 9px 11px;
+cursor: pointer;
+}
+.brand-menu-item:hover,
+.brand-menu-item:focus-visible {
+background: var(--grab-soft);
+outline: none;
+}
+.panel {
+border: 1px solid var(--line);
+border-radius: 12px;
+background: var(--panel);
+padding: 12px;
+box-shadow: none;
+}
+.drink-panel,
+#modifiersSection,
+#nameSection,
+.action-panel,
+.view-orders {
+border: 0;
+background: transparent;
+padding: 0;
+}
+.drink-panel {
+margin-top: -1px;
+padding-top: 14px;
+border-radius: 18px 18px 0 0;
+background: var(--surface);
+}
+.app.no-drink-selected .order-form {
+align-content: center;
+}
+.app.no-drink-selected .drink-panel {
+padding-top: 18px;
+padding-bottom: 18px;
+}
+.app.no-drink-selected .order-form::before {
+content: "";
+position: absolute;
+inset: 0;
+display: block;
+background:
+radial-gradient(circle at 18px 18px, rgba(111, 189, 174, .16) 0 2px, transparent 3px),
+radial-gradient(circle at 54px 50px, rgba(176, 123, 69, .12) 0 2px, transparent 3px),
+linear-gradient(135deg, transparent 0 42%, rgba(111, 189, 174, .07) 43% 45%, transparent 46% 100%);
+background-size: 72px 72px, 72px 72px, 96px 96px;
+opacity: .9;
+pointer-events: none;
+}
+.app.no-drink-selected .app-brand::before {
+content: "";
+position: absolute;
+left: 50%;
+bottom: calc(100% - 1px);
+width: 176px;
+height: 104px;
+transform: translateX(-50%);
+background: url("assets/kopi-run-logo.png") center top / 176px 176px no-repeat;
+filter: drop-shadow(0 12px 18px rgba(37, 31, 28, .14));
+pointer-events: none;
+}
+.app.no-drink-selected .app-brand,
+.app.no-drink-selected .drink-panel,
+.app.no-drink-selected .view-orders {
+position: relative;
+z-index: 2;
+}
+.app.no-drink-selected .app-brand {
+z-index: 20;
+}
+.app.no-drink-selected .brand-menu {
+z-index: 30;
+}
+.step-panel.revealed {
+display: block;
+}
+label,
+.label,
+.section-title {
+margin: 0 0 8px;
+color: #463b35;
+font-size: 11px;
+line-height: 1.15;
+font-weight: 800;
+text-transform: none;
+}
+.section-title {
+font-size: 15px;
+}
+input[type="text"],
+select {
+min-height: 54px;
+border: 1px solid var(--line-strong);
+border-radius: 12px;
+background: #fffdf6;
+padding: 8px 12px;
+color: var(--ink);
+font-size: 24px;
+font-weight: 800;
+box-shadow: none;
+}
+#remarkInput {
+min-height: 46px;
+font-size: 18px;
+}
+input[type="text"]::placeholder {
+color: rgba(43, 33, 29, .34);
+}
+input[type="text"]:focus,
+select:focus {
+border-color: var(--grab);
+box-shadow: 0 0 0 3px rgba(104, 185, 168, .2);
+}
+.drink-grid,
+.compact-grid,
+.name-entry-row,
+.history-filters,
+.history-stats {
+gap: 8px;
+}
+.drink-card {
+min-height: 116px;
+border: 1px solid rgba(201, 182, 165, .78);
+border-radius: 10px;
+background: #fffaf0;
+padding: 10px 6px 9px;
+box-shadow: none;
+}
+.drink-card::before {
+display: none;
+}
+.drink-card:hover {
+transform: translateY(-1px);
+box-shadow: 0 6px 16px rgba(60, 43, 32, .09);
+}
+.drink-card .drink-art {
+height: 68px;
+max-width: 72px;
+margin-bottom: 7px;
+filter: none;
+}
+.drink-card span {
+min-height: 22px;
+font-size: 12px;
+line-height: 1.15;
+font-weight: 800;
+text-align: center;
+}
+.drink-card.active {
+border-color: var(--grab);
+background: var(--grab-soft);
+box-shadow: inset 0 0 0 1px rgba(111, 189, 174, .36);
+transform: none;
+}
+.drink-card.active::after {
+top: 6px;
+right: 6px;
+width: 20px;
+height: 20px;
+background: var(--grab);
+box-shadow: none;
+}
+.option {
+height: 44px;
+min-height: 44px;
+border: 1px solid var(--line-strong);
+border-radius: 10px;
+background: #fffdf6;
+padding: 6px 8px;
+font-size: 14px;
+font-weight: 800;
+box-shadow: none;
+}
+.option.active {
+border-color: var(--grab);
+background: var(--grab);
+color: #fff;
+box-shadow: none;
+transform: none;
+}
+.thickness.active,
+.milk.active,
+.sugar.active,
+.milo-thickness.active,
+.milo-sugar.active,
+.checkbox-row:has(input:checked) {
+transform: none;
+}
+.order-controls {
+grid-template-columns: minmax(0, .9fr) minmax(0, 1.5fr);
+gap: 8px;
+padding: 0;
+background: transparent;
+}
+.checkbox-row {
+min-height: 54px;
+border: 1px solid var(--line-strong);
+border-radius: 12px;
+background: #fffdf6;
+padding: 8px 10px;
+gap: 8px;
+font-size: 13px;
+font-weight: 800;
+box-shadow: none;
+}
+.checkbox-row:has(input:checked) {
+border-color: var(--grab);
+background: var(--grab-soft);
+box-shadow: inset 0 0 0 1px rgba(104, 185, 168, .18);
+color: #26695f;
+}
+.checkbox-row .ice-art {
+width: 24px;
+height: 24px;
+filter: none;
+}
+.name-entry-row {
+grid-template-columns: minmax(104px, .9fr) minmax(0, 1.9fr);
+}
+.primary,
+.secondary {
+min-height: 54px;
+border-radius: 10px;
+background: var(--grab);
+font-size: 15px;
+font-weight: 800;
+box-shadow: none;
+}
+.primary:hover,
+.secondary:hover {
+background: var(--grab-dark);
+}
+.view-orders {
+gap: 12px;
+padding: 0 0 8px;
+}
+.summary-link,
+.legend-link,
+.export-toggle,
+.clear-toggle {
+font-size: 12px;
+font-weight: 700;
+color: #6f6964;
+}
+.list-topbar {
+padding: 12px 8px;
+background: var(--grab);
+border-bottom: 0;
+color: #fff;
+}
+.list-topbar h2 {
+font-size: 17px;
+}
+.back-button {
+border: 0;
+background: rgba(255, 255, 255, .22);
+color: #fff;
+box-shadow: none;
+}
+.summary-section,
+.checklist-section,
+.history-section,
+.empty {
+border-radius: 0;
+border-width: 0 0 1px;
+background: #fffaf0;
+}
+.section-head {
+margin-bottom: 8px;
+}
+.counter-groups,
+.person-list {
+gap: 0;
+}
+.counter-group,
+.person-card,
+.history-stat {
+border-width: 0 0 1px;
+border-radius: 0;
+background: #fffaf0;
+padding: 11px 0;
+box-shadow: none;
+}
+.counter-heading {
+margin-bottom: 7px;
+color: #3b9488;
+font-size: 12px;
+}
+.counter-items {
+padding-left: 18px;
+font-size: 17px;
+line-height: 1.45;
+}
+.drink-name {
+font-size: 15px;
+line-height: 1.25;
+}
+.meta {
+font-size: 12px;
+line-height: 1.35;
+}
+.brand-footer {
+padding: 14px 18px 16px;
+background: linear-gradient(180deg, #fffaf0 0%, #eef7f4 100%);
+border-top: 1px solid var(--line);
+}
+.brand-footer::before {
+display: none;
+}
+.brand-lockup {
+justify-content: center;
+gap: 8px;
+}
+.brand-logo {
+width: 34px;
+height: 34px;
+border-radius: 0;
+object-fit: contain;
+}
+.brand-footer h1 {
+font-size: 22px;
+font-style: normal;
+}
+.brand-footer p {
+font-size: 12px;
+font-style: normal;
+color: var(--muted);
+}
+@media (min-width: 760px) {
+.app { width: min(100%, 520px); }
+.order-form,
+.order-lists { padding-inline: 14px; }
+.drink-card { min-height: 118px; }
+.drink-card .drink-art { height: 72px; max-width: 78px; }
+}
+@media (max-width: 360px) {
+.order-form,
+.order-lists { padding: 12px 6px 0; }
+.app-brand { margin: -12px -6px 0; padding: 10px 12px; }
+.drink-panel { padding-top: 12px; border-radius: 16px 16px 0 0; }
+.app-logo { width: 40px; height: 40px; border-radius: 0; }
+.app-brand-title { font-size: 22px; }
+.app-brand-subtitle { font-size: 11px; }
+.drink-grid,
+.compact-grid,
+.name-entry-row { gap: 6px; }
+.drink-card { min-height: 106px; }
+.drink-card .drink-art { height: 58px; max-width: 62px; }
+.drink-card span { font-size: 11px; }
+.option { font-size: 12px; padding-inline: 4px; }
+input[type="text"],
+select { font-size: 22px; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+<main>
+<section class="order-form" aria-label="Order form">
+<header class="app-brand" aria-label="Kopi Run">
+<img class="app-logo" src="assets/kopi-run-logo.png" alt="Kopi Run logo">
+<div class="app-brand-text">
+<div class="app-brand-title">Kopi Run</div>
+<div class="app-brand-subtitle">Never miss any kopitiam order again</div>
+</div>
+<button id="brandMenuBtn" class="brand-menu-button" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="brandMenu">
+<span class="brand-menu-icon" aria-hidden="true"><span></span></span>
+</button>
+<div id="brandMenu" class="brand-menu" hidden>
+<button class="brand-menu-item" type="button" data-brand-nav="summary">Summary</button>
+<button class="brand-menu-item" type="button" data-brand-nav="counter">Counter Order List</button>
+<button class="brand-menu-item" type="button" data-brand-nav="checklist">Who Ordered What</button>
+<button class="brand-menu-item" type="button" data-brand-nav="history">History</button>
+</div>
+</header>
+<div class="panel drink-panel">
+<div class="label">What do you feel like to DRINK today?</div>
+<div class="drink-grid">
+<button class="drink-card base" data-base="Kopi" aria-label="Kopi">
+<img class="drink-art" src="assets/drink-icons/kopi.png" alt="" aria-hidden="true">
+<span>Kopi</span>
+</button>
+<button class="drink-card base" data-base="Teh" aria-label="Teh">
+<img class="drink-art" src="assets/drink-icons/teh.png" alt="" aria-hidden="true">
+<span>Teh</span>
+</button>
+<button class="drink-card base" data-base="Yuan Yang" aria-label="Yuan Yang">
+<img class="drink-art" src="assets/drink-icons/yuan-yang.png" alt="" aria-hidden="true">
+<span>Yuan Yang</span>
+</button>
+<button class="drink-card base" data-base="Soft Drink" aria-label="Soft Drink">
+<img class="drink-art" src="assets/drink-icons/soft-drink.png" alt="" aria-hidden="true">
+<span>Soft Drink</span>
+</button>
+<button class="drink-card base" data-base="Diao Yu" aria-label="Diao Yu">
+<img class="drink-art" src="assets/drink-icons/diao-yu.png" alt="" aria-hidden="true">
+<span>Diao Yu</span>
+</button>
+<button class="drink-card base" data-base="Milo" aria-label="Milo">
+<img class="drink-art" src="assets/drink-icons/milo.png" alt="" aria-hidden="true">
+<span>Milo</span>
+</button>
+</div>
+</div>
+<div id="softDrinkSection" class="panel tint step-panel">
+<label for="softDrinkInput">Soft Drink Type</label>
+<input id="softDrinkInput" type="text" list="softDrinkOptions" placeholder="Coke, Sprite, Michael Jackson" autocomplete="off">
+<datalist id="softDrinkOptions">
+<option value="Coke"></option>
+<option value="Coke Zero"></option>
+<option value="Sprite"></option>
+<option value="100 Plus"></option>
+<option value="Michael Jackson"></option>
+<option value="Green Tea"></option>
+<option value="Mineral Water"></option>
+<option value="Soya Bean"></option>
+</datalist>
+</div>
+<div id="miloThicknessSection" class="panel thickness-panel step-panel">
+<div class="label">Concentration</div>
+<div class="compact-grid">
+<button class="option milo-thickness" data-milo-thickness="Gao">Gao</button>
+<button class="option milo-thickness" data-milo-thickness="">Regular</button>
+</div>
+</div>
+<div id="miloSugarSection" class="panel sugar-panel step-panel">
+<div class="label">Sugar Level</div>
+<div class="compact-grid">
+<button class="option milo-sugar" data-milo-sugar="Kosong">Kosong</button>
+<button class="option milo-sugar" data-milo-sugar="">Regular</button>
+</div>
+</div>
+<div id="remarkSection" class="panel tint step-panel">
+<label for="remarkInput">Remarks</label>
+<input id="remarkInput" type="text" placeholder="e.g., less sweet, packet" autocomplete="off">
+</div>
+<div id="modifiersSection" class="stack">
+<div id="thicknessSection" class="panel thickness-panel step-panel">
+<div class="label">Concentration</div>
+<div class="compact-grid">
+<button class="option thickness" data-thickness="Po">Po</button>
+<button class="option thickness" data-thickness="">Regular</button>
+<button class="option thickness" data-thickness="Gao">Gao</button>
+</div>
+</div>
+<div id="milkSection" class="panel milk-panel step-panel">
+<div class="label">Milk Type</div>
+<div class="compact-grid">
+<button class="option milk emphasis-option" data-milk="O">O</button>
+<button class="option milk" data-milk="">Regular</button>
+<button class="option milk emphasis-option" data-milk="C">C</button>
+</div>
+</div>
+<div id="sugarSection" class="panel sugar-panel step-panel">
+<div class="label">Sugar Level</div>
+<div class="compact-grid sugar-grid">
+<button class="option sugar" data-sugar="Kosong">Kosong</button>
+<button class="option sugar" data-sugar="Siew-Dai">Siew-Dai</button>
+<button class="option sugar" data-sugar="">Regular</button>
+<button class="option sugar" data-sugar="Gah-Dai">Gah-Dai</button>
+</div>
+</div>
+</div>
+<div id="nameSection" class="panel step-panel">
+<label for="nameInput">Name</label>
+<div class="name-entry-row">
+<label class="checkbox-row" for="iceCheck">
+<input id="iceCheck" type="checkbox">
+<img class="ice-art" src="assets/drink-icons/iced.png" alt="" aria-hidden="true">
+<span>Peng</span>
+</label>
+<input id="nameInput" type="text" placeholder="e.g., Mark Gor" autocomplete="off">
+</div>
+</div>
+<div id="actionSection" class="action-panel step-panel">
+<button id="addOrderBtn" class="primary">Add to Order List</button>
+</div>
+<div class="view-orders">
+<button id="legendBtn" class="legend-link" type="button">Translation On</button>
+<button id="viewOrderListBtn" class="summary-link" type="button">No order yet</button>
+</div>
+</section>
+<section class="order-lists" aria-label="Order lists">
+<div class="list-topbar">
+<h2>Summary</h2>
+<button id="backToOrderBtn" class="back-button" type="button">Add order!</button>
+</div>
+<div id="summaryCard" class="panel tint summary-section spotlight-panel hidden">
+<button class="spotlight-exit" type="button">Full view</button>
+<div class="section-head">
+<h2 class="section-title">Counter Order List</h2>
+<button class="spotlight-toggle" type="button" data-spotlight-target="summary">Focus</button>
+</div>
+<div id="summaryList" class="counter-groups"></div>
+</div>
+<div id="checklistSection" class="panel checklist-section spotlight-panel hidden">
+<button class="spotlight-exit" type="button">Full view</button>
+<div class="section-head">
+<h2 class="section-title">Who Ordered What</h2>
+<button class="spotlight-toggle" type="button" data-spotlight-target="checklist">Focus</button>
+</div>
+<ul id="checklist" class="person-list"></ul>
+</div>
+<div id="emptyState" class="panel empty">No orders yet.</div>
+<div class="export-strip">
+<button id="historyToggle" class="export-toggle" type="button" aria-expanded="false">history</button><button id="clearListBtn" class="clear-toggle" type="button">clear list</button>
+</div>
+<div id="historyPanel" class="panel tint history-panel history-section hidden">
+<button class="spotlight-exit" type="button">Full view</button>
+<div class="history-head">
+<h2 class="section-title">History</h2>
+<span id="historyTotal" class="history-total"></span>
+<button class="spotlight-toggle" type="button" data-spotlight-target="history">Focus</button>
+</div>
+<div class="history-filters" aria-label="History period">
+<button class="history-filter active" type="button" data-history-period="today">Today</button>
+<button class="history-filter" type="button" data-history-period="week">Week</button>
+<button class="history-filter" type="button" data-history-period="month">Month</button>
+<button class="history-filter" type="button" data-history-period="all">All</button>
+</div>
+<div id="historyStats" class="history-stats"></div>
+<ul id="historyList" class="person-list history-list"></ul>
+<div class="history-actions">
+<button id="exportHistoryBtn" class="secondary" type="button">Download History</button>
+</div>
+</div>
+<footer class="brand-footer">
+<div class="brand-lockup"><img class="brand-logo" src="assets/kopi-run-logo.png" alt="" aria-hidden="true"><h1>Kopi Run</h1></div>
+<p>Never miss any kopitiam order again</p>
+</footer>
+</section>
+</main>
+</div>
+<script>
+const storageKey = 'kopiRunOrders';
+const historyStorageKey = 'kopiRunOrderHistory';
+let orders = JSON.parse(localStorage.getItem(storageKey) || '[]');
+let orderHistory = JSON.parse(localStorage.getItem(historyStorageKey) || '[]');
+const state = { base: null, thickness: null, milk: null, sugar: null, historyPeriod: 'today' };
+if (!orderHistory.length && orders.length) {
+orderHistory = [...orders];
+localStorage.setItem(historyStorageKey, JSON.stringify(orderHistory));
+}
+const nameInput = document.getElementById('nameInput');
+const softDrinkInput = document.getElementById('softDrinkInput');
+const softDrinkSection = document.getElementById('softDrinkSection');
+const remarkInput = document.getElementById('remarkInput');
+const remarkSection = document.getElementById('remarkSection');
+const miloThicknessSection = document.getElementById('miloThicknessSection');
+const miloSugarSection = document.getElementById('miloSugarSection');
+const modifiersSection = document.getElementById('modifiersSection');
+const drinkPanel = document.querySelector('.drink-panel');
+const thicknessSection = document.getElementById('thicknessSection');
+const milkSection = document.getElementById('milkSection');
+const sugarSection = document.getElementById('sugarSection');
+const nameSection = document.getElementById('nameSection');
+const actionSection = document.getElementById('actionSection');
+const iceCheck = document.getElementById('iceCheck');
+const addOrderBtn = document.getElementById('addOrderBtn');
+const legendBtn = document.getElementById('legendBtn');
+const viewOrderListBtn = document.getElementById('viewOrderListBtn');
+const brandMenuBtn = document.getElementById('brandMenuBtn');
+const brandMenu = document.getElementById('brandMenu');
+const appRoot = document.querySelector('.app');
+let addFeedbackTimer;
+let translationAutoOffTimer;
+function saveOrders() {
+localStorage.setItem(storageKey, JSON.stringify(orders));
+}
+function saveHistory() {
+localStorage.setItem(historyStorageKey, JSON.stringify(orderHistory));
+}
+function markFormChanged() {
+clearTimeout(addFeedbackTimer);
+addOrderBtn.classList.remove('submitted');
+addOrderBtn.textContent = 'Add to Order List';
+if (state.base === 'Soft Drink') {
+if (softDrinkInput.value.trim()) {
+revealStep(nameSection);
+} else {
+hideStep(nameSection);
+}
+}
+if (canAddCurrentOrder()) {
+revealStep(actionSection);
+} else {
+hideStep(actionSection);
+}
+updateLegendVisibility();
+updateFlowDimming();
+}
+function updateLegendVisibility() {
+const canUseLegend = Boolean(state.base);
+legendBtn.classList.toggle('hidden', !canUseLegend);
+appRoot.classList.toggle('no-drink-selected', !canUseLegend);
+if (!canUseLegend) setLegendMode(false);
+}
+function updateSummaryLink() {
+const oneHourAgo = Date.now() - 60 * 60 * 1000;
+const hasRecentOrder = orders.some(order => {
+const created = Date.parse(order.createdAt || '');
+return Number.isFinite(created) && created >= oneHourAgo;
+});
+viewOrderListBtn.textContent = hasRecentOrder ? 'Summary' : 'No order yet';
+}
+function setDimmed(section, shouldDim) {
+if (section) section.classList.toggle('flow-dimmed', shouldDim);
+}
+function updateFlowDimming() {
+setDimmed(drinkPanel, Boolean(state.base));
+setDimmed(softDrinkSection, state.base === 'Soft Drink' && Boolean(softDrinkInput.value.trim()));
+setDimmed(miloThicknessSection, isMiloDrink() && state.thickness !== null);
+setDimmed(miloSugarSection, isMiloDrink() && state.sugar !== null);
+setDimmed(remarkSection, isDiaoYuDrink() || (isMiloDrink() && Boolean(nameInput.value.trim())));
+setDimmed(thicknessSection, isStandardDrink() && state.thickness !== null);
+setDimmed(milkSection, isStandardDrink() && state.milk !== null);
+setDimmed(sugarSection, isStandardDrink() && state.sugar !== null);
+setDimmed(nameSection, canAddCurrentOrder());
+}
+function isRemarkDrink() {
+return state.base === 'Milo' || state.base === 'Diao Yu';
+}
+function isMiloDrink() {
+return state.base === 'Milo';
+}
+function isDiaoYuDrink() {
+return state.base === 'Diao Yu';
+}
+function isStandardDrink() {
+return state.base && state.base !== 'Soft Drink' && !isRemarkDrink();
+}
+function canAddCurrentOrder() {
+if (!state.base || !nameInput.value.trim()) return false;
+if (state.base === 'Soft Drink') return Boolean(softDrinkInput.value.trim());
+if (isMiloDrink()) return state.thickness !== null && state.sugar !== null;
+if (isDiaoYuDrink()) return true;
+return state.thickness !== null && state.milk !== null && state.sugar !== null;
+}
+function revealStep(section) {
+section.classList.add('revealed');
+section.classList.remove('hidden');
+section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+function hideStep(section) {
+section.classList.remove('revealed');
+section.classList.add('hidden');
+}
+function resetButtons(groupClass) {
+document.querySelectorAll(`.${groupClass}`).forEach(button => button.classList.remove('active', 'just-selected'));
+}
+const legendLabels = [
+['.thickness[data-thickness="Po"]', 'Thin'],
+['.thickness[data-thickness="Gao"]', 'Thick'],
+['.milo-thickness[data-milo-thickness="Gao"]', 'Thick'],
+['.milk[data-milk="O"]', '🚫No Milk'],
+['.milk[data-milk=""]', 'Condensed Milk'],
+['.milk[data-milk="C"]', 'Evaporated Milk'],
+['.sugar[data-sugar="Kosong"]', '🚫No Sweet'],
+['.milo-sugar[data-milo-sugar="Kosong"]', '🚫No Sweet'],
+['.sugar[data-sugar="Siew-Dai"]', 'Less Sweet'],
+['.sugar[data-sugar="Gah-Dai"]', 'More Sweet'],
+['.checkbox-row[for="iceCheck"] span', 'Iced']
+].map(([selector, legend]) => ({ selector, legend }));
+function setLegendMode(showLegend) {
+clearTimeout(translationAutoOffTimer);
+legendBtn.classList.toggle('active', showLegend);
+legendBtn.textContent = showLegend ? 'Translation Off' : 'Translation On';
+appRoot.classList.toggle('legend-mode', showLegend);
+legendLabels.forEach(({ selector, legend }) => {
+const element = document.querySelector(selector);
+if (!element) return;
+if (!element.dataset.originalLabel) element.dataset.originalLabel = element.innerHTML;
+element.innerHTML = showLegend ? legend : element.dataset.originalLabel;
+});
+if (showLegend) {
+translationAutoOffTimer = setTimeout(() => setLegendMode(false), 3000);
+}
+}
+function setActiveButton(groupClass, clickedButton) {
+document.querySelectorAll(`.${groupClass}`).forEach(button => button.classList.remove('active', 'just-selected'));
+clickedButton.classList.add('active');
+if (clickedButton.classList.contains('drink-card')) {
+clickedButton.classList.add('just-selected');
+setTimeout(() => clickedButton.classList.remove('just-selected'), 220);
+}
+}
+function enterSpotlight(target) {
+if (target === 'history') {
+document.getElementById('historyPanel').classList.remove('hidden');
+renderHistory();
+}
+appRoot.classList.add('spotlight-mode');
+appRoot.dataset.spotlight = target;
+window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function exitSpotlight() {
+appRoot.classList.remove('spotlight-mode');
+delete appRoot.dataset.spotlight;
+}
+function setBrandMenuOpen(isOpen) {
+brandMenu.hidden = !isOpen;
+brandMenuBtn.setAttribute('aria-expanded', String(isOpen));
+}
+function openOrderListView() {
+appRoot.classList.add('order-list-open');
+exitSpotlight();
+render();
+window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function openBrandNav(target) {
+setBrandMenuOpen(false);
+if (target === 'summary') {
+openOrderListView();
+return;
+}
+appRoot.classList.add('order-list-open');
+render();
+if (target === 'history') {
+document.getElementById('historyPanel').classList.remove('hidden');
+renderHistory();
+enterSpotlight('history');
+return;
+}
+enterSpotlight(target === 'counter' ? 'summary' : 'checklist');
+}
+function setBase(button) {
+state.base = button.dataset.base;
+state.thickness = null;
+state.milk = null;
+state.sugar = null;
+setActiveButton('base', button);
+resetButtons('thickness');
+resetButtons('milk');
+resetButtons('sugar');
+nameInput.value = '';
+softDrinkInput.value = '';
+remarkInput.value = '';
+hideStep(softDrinkSection);
+hideStep(remarkSection);
+hideStep(miloThicknessSection);
+hideStep(miloSugarSection);
+hideStep(thicknessSection);
+hideStep(milkSection);
+hideStep(sugarSection);
+hideStep(nameSection);
+hideStep(actionSection);
+if (state.base === 'Soft Drink') {
+modifiersSection.classList.add('hidden');
+revealStep(softDrinkSection);
+} else if (isRemarkDrink()) {
+modifiersSection.classList.add('hidden');
+remarkInput.placeholder = state.base === 'Diao Yu' ? 'e.g., warm water, super hot' : 'e.g., Milo Dinosaur';
+if (isMiloDrink()) {
+revealStep(miloThicknessSection);
+} else {
+revealStep(remarkSection);
+revealStep(nameSection);
+requestAnimationFrame(() => nameInput.focus());
+}
+} else {
+modifiersSection.classList.remove('hidden');
+revealStep(thicknessSection);
+}
+markFormChanged();
+}
+function resetOrderForm() {
+state.base = null;
+state.thickness = null;
+state.milk = null;
+state.sugar = null;
+nameInput.value = '';
+softDrinkInput.value = '';
+remarkInput.value = '';
+iceCheck.checked = false;
+hideStep(softDrinkSection);
+hideStep(remarkSection);
+hideStep(miloThicknessSection);
+hideStep(miloSugarSection);
+modifiersSection.classList.remove('hidden');
+resetButtons('base');
+resetButtons('thickness');
+resetButtons('milk');
+resetButtons('sugar');
+resetButtons('milo-thickness');
+resetButtons('milo-sugar');
+hideStep(thicknessSection);
+hideStep(milkSection);
+hideStep(sugarSection);
+hideStep(nameSection);
+hideStep(actionSection);
+updateFlowDimming();
+}
+function getKopitiamName(item) {
+const parts = [item.softDrink || item.base];
+if (item.milk) parts.push(item.milk);
+if (item.thickness) parts.push(item.thickness);
+if (item.sugar) parts.push(item.sugar);
+if ((item.base === 'Milo' || item.base === 'Diao Yu') && item.remark) parts.push(item.remark);
+if (item.isIce) parts.push('Peng');
+return parts.join(' ');
+}
+function getDrinkCountKey(drink) {
+return drink.trim()
+.replace(/\s+/g, ' ')
+.replace(/\b(dino|dinosaur|dinasour)\b/gi, 'dinosaur')
+.toLocaleLowerCase('en-SG');
+}
+function getDrinkCountLabel(drink) {
+return drink.trim()
+.replace(/\s+/g, ' ')
+.replace(/\b(dino|dinosaur|dinasour)\b/gi, 'Dinosaur');
+}
+function preferredDrinkLabel(currentLabel, nextLabel) {
+const currentUppercase = (currentLabel.match(/[A-Z]/g) || []).length;
+const nextUppercase = (nextLabel.match(/[A-Z]/g) || []).length;
+return nextUppercase > currentUppercase ? nextLabel : currentLabel;
+}
+function addOrder() {
+const owner = nameInput.value.trim();
+if (!canAddCurrentOrder()) return;
+if (!owner) {
+nameInput.focus();
+return;
+}
+const isSoftDrink = state.base === 'Soft Drink';
+const hasRemark = isRemarkDrink();
+const hasStandardModifiers = isStandardDrink() || isMiloDrink();
+const order = {
+id: `${Date.now()}-${Math.random()}`,
+createdAt: new Date().toISOString(),
+owner,
+base: state.base,
+thickness: hasStandardModifiers ? state.thickness : '',
+milk: isStandardDrink() ? state.milk : '',
+sugar: hasStandardModifiers ? state.sugar : '',
+softDrink: isSoftDrink ? softDrinkInput.value.trim() : '',
+remark: hasRemark ? remarkInput.value.trim() : '',
+isIce: iceCheck.checked
+};
+orders.push(order);
+orderHistory.push(order);
+saveOrders();
+saveHistory();
+resetOrderForm();
+updateLegendVisibility();
+window.scrollTo({ top: 0, behavior: 'smooth' });
+addOrderBtn.classList.add('submitted');
+addOrderBtn.textContent = 'Added';
+clearTimeout(addFeedbackTimer);
+addFeedbackTimer = setTimeout(() => {
+addOrderBtn.classList.remove('submitted');
+addOrderBtn.textContent = 'Add to Order List';
+}, 800);
+render();
+}
+function clearOrders() {
+if (!orders.length) return;
+if (!confirm('Clear current order list? History will be kept.')) return;
+orders = [];
+saveOrders();
+render();
+}
+function deleteOrder(id) {
+orders = orders.filter(order => order.id !== id);
+saveOrders();
+render();
+}
+function csvCell(value) {
+return `"${String(value ?? '').replace(/"/g, '""')}"`;
+}
+function startOfWeek(date) {
+const start = new Date(date);
+const day = start.getDay() || 7;
+start.setHours(0, 0, 0, 0);
+start.setDate(start.getDate() - day + 1);
+return start;
+}
+function getHistoryRows(period = state.historyPeriod) {
+const now = new Date();
+const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+const weekStart = startOfWeek(now);
+return orderHistory.filter(order => {
+const created = new Date(order.createdAt || Date.now());
+if (period === 'all') return true;
+if (period === 'month') return created >= monthStart;
+if (period === 'today') return created >= todayStart;
+return created >= weekStart;
+});
+}
+function downloadCsv(rows, fileStem) {
+const lines = [['Date', 'Time', 'Name', 'Drink', 'Base', 'Soft Drink Type', 'Remark', 'Iced'].map(csvCell).join(',')];
+rows.forEach(order => {
+const created = new Date(order.createdAt || Date.now());
+lines.push([
+created.toLocaleDateString('en-SG'),
+created.toLocaleTimeString('en-SG', { hour: '2-digit', minute: '2-digit' }),
+order.owner,
+getKopitiamName(order),
+order.base,
+order.softDrink || '',
+order.remark || '',
+order.isIce ? 'Yes' : 'No'
+].map(csvCell).join(','));
+});
+const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+const url = URL.createObjectURL(blob);
+const link = document.createElement('a');
+link.href = url;
+link.download = `${fileStem}-${new Date().toISOString().slice(0, 10)}.csv`;
+document.body.appendChild(link);
+link.click();
+link.remove();
+URL.revokeObjectURL(url);
+}
+function exportHistory() {
+const rows = getHistoryRows();
+if (!rows.length) {
+alert('No history found to export.');
+return;
+}
+downloadCsv(rows, `kopi-run-history-${state.historyPeriod}`);
+}
+function render() {
+const summaryCard = document.getElementById('summaryCard');
+const summaryList = document.getElementById('summaryList');
+const checklistSection = document.getElementById('checklistSection');
+const checklist = document.getElementById('checklist');
+const emptyState = document.getElementById('emptyState');
+updateSummaryLink();
+renderHistory();
+if (!orders.length) {
+summaryCard.classList.add('hidden');
+checklistSection.classList.add('hidden');
+emptyState.classList.remove('hidden');
+return;
+}
+emptyState.classList.add('hidden');
+summaryCard.classList.remove('hidden');
+checklistSection.classList.remove('hidden');
+const groupLabels = {
+Kopi: 'Kopi',
+Teh: 'Teh',
+Milo: 'Milo',
+'Yuan Yang': 'Yuan Yang',
+'Diao Yu': 'Diao Yu',
+'Soft Drink': 'Soft Drinks'
+};
+const groupOrder = ['Kopi', 'Teh', 'Yuan Yang', 'Milo', 'Diao Yu', 'Soft Drink'];
+const groupedCounts = {};
+orders.forEach(order => {
+const group = groupOrder.includes(order.base) ? order.base : 'Soft Drink';
+const drink = getKopitiamName(order);
+const drinkKey = getDrinkCountKey(drink);
+const drinkLabel = getDrinkCountLabel(drink);
+groupedCounts[group] = groupedCounts[group] || {};
+if (!groupedCounts[group][drinkKey]) {
+groupedCounts[group][drinkKey] = { drink: drinkLabel, quantity: 0 };
+}
+groupedCounts[group][drinkKey].drink = preferredDrinkLabel(groupedCounts[group][drinkKey].drink, drinkLabel);
+groupedCounts[group][drinkKey].quantity += 1;
+});
+summaryList.innerHTML = groupOrder
+.filter(group => groupedCounts[group])
+.map(group => {
+const items = Object.values(groupedCounts[group])
+.sort((a, b) => a.drink.localeCompare(b.drink))
+.map(({ drink, quantity }) => `<li>${quantity}x&nbsp;&nbsp;${drink}</li>`)
+.join('');
+return `<section class="counter-group"><div class="counter-heading">${groupLabels[group]}</div><ul class="counter-items">${items}</ul></section>`;
+})
+.join('');
+checklist.innerHTML = orders.map(order => {
+const created = new Date(order.createdAt || Date.now()).toLocaleString('en-SG', {
+day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+});
+const remark = order.remark ? ' | ' + order.remark : '';
+return `
+<li class="person-card">
+<div>
+<div class="drink-name">${getKopitiamName(order)}</div>
+<div class="meta">For: ${order.owner} | ${created}${remark}</div>
+</div>
+<button class="remove" data-delete="${order.id}" aria-label="Remove order">❌</button>
+</li>
+`;
+}).join('');
+}
+function renderHistory() {
+const historyPanel = document.getElementById('historyPanel');
+const historyTotal = document.getElementById('historyTotal');
+const historyStats = document.getElementById('historyStats');
+const historyList = document.getElementById('historyList');
+const rows = getHistoryRows();
+const people = new Set(rows.map(order => order.owner)).size;
+const drinkCounts = {};
+rows.forEach(order => {
+const drink = getKopitiamName(order);
+const drinkKey = getDrinkCountKey(drink);
+const drinkLabel = getDrinkCountLabel(drink);
+if (!drinkCounts[drinkKey]) {
+drinkCounts[drinkKey] = { drink: drinkLabel, quantity: 0 };
+}
+drinkCounts[drinkKey].drink = preferredDrinkLabel(drinkCounts[drinkKey].drink, drinkLabel);
+drinkCounts[drinkKey].quantity += 1;
+});
+const topDrink = Object.values(drinkCounts).sort((a, b) => b.quantity - a.quantity || a.drink.localeCompare(b.drink))[0];
+const periodLabel = state.historyPeriod === 'all'
+? 'all time'
+: state.historyPeriod === 'today'
+? 'today'
+: `this ${state.historyPeriod}`;
+historyTotal.textContent = `${orderHistory.length} saved`;
+historyStats.innerHTML = [
+[rows.length, `orders ${periodLabel}`],
+[people, `people ${periodLabel}`],
+[topDrink ? topDrink.quantity : 0, topDrink ? topDrink.drink : 'top drink'],
+[Object.keys(drinkCounts).length, 'drink types']
+].map(([value, label]) => `<div class="history-stat"><strong>${value}</strong><span>${label}</span></div>`).join('');
+historyList.innerHTML = rows.slice().reverse().slice(0, 30).map(order => {
+const created = new Date(order.createdAt || Date.now()).toLocaleString('en-SG', {
+day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+});
+const remark = order.remark ? ' | ' + order.remark : '';
+return `
+<li class="person-card">
+<div>
+<div class="drink-name">${getKopitiamName(order)}</div>
+<div class="meta">For: ${order.owner} | ${created}${remark}</div>
+</div>
+</li>
+`;
+}).join('') || '<li class="empty">No history yet.</li>';
+document.getElementById('historyToggle').setAttribute('aria-expanded', String(!historyPanel.classList.contains('hidden')));
+}
+document.querySelectorAll('.base').forEach(button => button.addEventListener('click', () => setBase(button)));
+document.querySelectorAll('.thickness').forEach(button => button.addEventListener('click', () => {
+state.thickness = button.dataset.thickness;
+setActiveButton('thickness', button);
+revealStep(milkSection);
+hideStep(sugarSection);
+hideStep(nameSection);
+hideStep(actionSection);
+state.milk = null;
+state.sugar = null;
+resetButtons('milk');
+resetButtons('sugar');
+nameInput.value = '';
+markFormChanged();
+}));
+document.querySelectorAll('.milk').forEach(button => button.addEventListener('click', () => {
+state.milk = button.dataset.milk;
+setActiveButton('milk', button);
+revealStep(sugarSection);
+hideStep(nameSection);
+hideStep(actionSection);
+state.sugar = null;
+resetButtons('sugar');
+nameInput.value = '';
+markFormChanged();
+}));
+document.querySelectorAll('.sugar').forEach(button => button.addEventListener('click', () => {
+state.sugar = button.dataset.sugar;
+setActiveButton('sugar', button);
+revealStep(nameSection);
+requestAnimationFrame(() => nameInput.focus());
+markFormChanged();
+}));
+document.querySelectorAll('.milo-thickness').forEach(button => button.addEventListener('click', () => {
+state.thickness = button.dataset.miloThickness;
+state.sugar = null;
+setActiveButton('milo-thickness', button);
+resetButtons('milo-sugar');
+revealStep(miloSugarSection);
+hideStep(remarkSection);
+hideStep(nameSection);
+hideStep(actionSection);
+nameInput.value = '';
+markFormChanged();
+}));
+document.querySelectorAll('.milo-sugar').forEach(button => button.addEventListener('click', () => {
+state.sugar = button.dataset.miloSugar;
+setActiveButton('milo-sugar', button);
+revealStep(remarkSection);
+revealStep(nameSection);
+requestAnimationFrame(() => nameInput.focus());
+markFormChanged();
+}));
+nameInput.addEventListener('input', markFormChanged);
+nameInput.addEventListener('keydown', event => {
+if (event.key === 'Enter') {
+event.preventDefault();
+addOrder();
+}
+});
+softDrinkInput.addEventListener('input', markFormChanged);
+remarkInput.addEventListener('input', markFormChanged);
+iceCheck.addEventListener('change', markFormChanged);
+addOrderBtn.addEventListener('click', addOrder);
+legendBtn.addEventListener('click', () => {
+setLegendMode(!legendBtn.classList.contains('active'));
+});
+document.getElementById('historyToggle').addEventListener('click', () => {
+const historyPanel = document.getElementById('historyPanel');
+historyPanel.classList.toggle('hidden');
+renderHistory();
+if (!historyPanel.classList.contains('hidden')) {
+historyPanel.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+});
+document.querySelectorAll('.history-filter').forEach(button => button.addEventListener('click', () => {
+state.historyPeriod = button.dataset.historyPeriod;
+setActiveButton('history-filter', button);
+renderHistory();
+}));
+document.getElementById('exportHistoryBtn').addEventListener('click', exportHistory);
+document.getElementById('clearListBtn').addEventListener('click', clearOrders);
+document.getElementById('viewOrderListBtn').addEventListener('click', openOrderListView);
+document.getElementById('backToOrderBtn').addEventListener('click', () => {
+appRoot.classList.remove('order-list-open');
+exitSpotlight();
+window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+brandMenuBtn.addEventListener('click', event => {
+event.stopPropagation();
+setBrandMenuOpen(brandMenu.hidden);
+});
+brandMenu.addEventListener('click', event => {
+const button = event.target.closest('[data-brand-nav]');
+if (button) openBrandNav(button.dataset.brandNav);
+});
+document.addEventListener('click', event => {
+if (!brandMenu.hidden && !event.target.closest('.app-brand')) setBrandMenuOpen(false);
+});
+document.addEventListener('keydown', event => {
+if (event.key === 'Escape') setBrandMenuOpen(false);
+});
+document.querySelectorAll('[data-spotlight-target]').forEach(button => {
+button.addEventListener('click', () => enterSpotlight(button.dataset.spotlightTarget));
+});
+document.querySelectorAll('.spotlight-exit').forEach(button => {
+button.addEventListener('click', exitSpotlight);
+});
+document.getElementById('checklist').addEventListener('click', event => {
+const button = event.target.closest('[data-delete]');
+if (button) deleteOrder(button.dataset.delete);
+});
+updateLegendVisibility();
+updateFlowDimming();
+render();
+</script>
+</body>
+</html>
