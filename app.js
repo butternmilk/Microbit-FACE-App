@@ -21,17 +21,17 @@ const VISION_IMPORT_URLS = [
 ];
 
 const metricConfig = [
-  ["x", "X", 99],
-  ["y", "Y", 99],
-  ["z", "Distance", 99],
-  ["yaw", "Yaw", 99],
-  ["pitch", "Pitch", 99],
-  ["mouth", "Mouth", 99],
+  ["visible", "Face Visibility", 1],
   ["leftEye", "Right Eye", 99],
   ["rightEye", "Left Eye", 99],
-  ["roll", "Roll", 9],
+  ["mouth", "Mouth", 99],
   ["smile", "Smile/Kiss", 9],
-  ["visible", "Face Visible", 1]
+  ["yaw", "Yaw", 99],
+  ["pitch", "Pitch", 99],
+  ["roll", "Roll", 9],
+  ["x", "X", 99],
+  ["y", "Y", 99],
+  ["z", "Z (Distance)", 99]
 ];
 const calibrationTargets = {
   x: 50,
