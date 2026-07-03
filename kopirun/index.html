@@ -1215,8 +1215,8 @@ border-radius: 18px 18px 0 0;
 background: var(--grab);
 }
 .app-logo {
-width: 44px;
-height: 44px;
+width: 53px;
+height: 53px;
 border-radius: 0;
 object-fit: contain;
 box-shadow: none;
@@ -1339,11 +1339,11 @@ position: absolute;
 inset: 0;
 display: block;
 background:
-radial-gradient(circle at 18px 18px, rgba(111, 189, 174, .16) 0 2px, transparent 3px),
-radial-gradient(circle at 54px 50px, rgba(176, 123, 69, .12) 0 2px, transparent 3px),
-linear-gradient(135deg, transparent 0 42%, rgba(111, 189, 174, .07) 43% 45%, transparent 46% 100%);
-background-size: 72px 72px, 72px 72px, 96px 96px;
-opacity: .9;
+radial-gradient(circle at 8px 8px, rgba(111, 189, 174, .13) 0 2px, transparent 2.5px),
+radial-gradient(circle at 28px 28px, rgba(176, 123, 69, .10) 0 1.5px, transparent 2px),
+linear-gradient(45deg, transparent 0 47%, rgba(111, 189, 174, .06) 48% 52%, transparent 53% 100%);
+background-size: 40px 40px, 40px 40px, 40px 40px;
+opacity: .72;
 pointer-events: none;
 }
 .app.no-drink-selected .app-brand::before {
@@ -1351,10 +1351,10 @@ content: "";
 position: absolute;
 left: 50%;
 bottom: calc(100% - 1px);
-width: 176px;
-height: 104px;
+width: min(100vw, 430px);
+height: 218px;
 transform: translateX(-50%);
-background: url("assets/kopi-run-logo.png") center top / 176px 176px no-repeat;
+background: url("assets/otter-merlion-table.png") center bottom / contain no-repeat;
 filter: drop-shadow(0 12px 18px rgba(37, 31, 28, .14));
 pointer-events: none;
 }
@@ -1611,8 +1611,8 @@ justify-content: center;
 gap: 8px;
 }
 .brand-logo {
-width: 34px;
-height: 34px;
+width: 41px;
+height: 41px;
 border-radius: 0;
 object-fit: contain;
 }
@@ -1629,6 +1629,10 @@ color: var(--muted);
 .app { width: min(100%, 520px); }
 .order-form,
 .order-lists { padding-inline: 14px; }
+.app.no-drink-selected .app-brand::before {
+width: 520px;
+height: 264px;
+}
 .drink-card { min-height: 118px; }
 .drink-card .drink-art { height: 72px; max-width: 78px; }
 }
@@ -1637,7 +1641,7 @@ color: var(--muted);
 .order-lists { padding: 12px 6px 0; }
 .app-brand { margin: -12px -6px 0; padding: 10px 12px; }
 .drink-panel { padding-top: 12px; border-radius: 16px 16px 0 0; }
-.app-logo { width: 40px; height: 40px; border-radius: 0; }
+.app-logo { width: 48px; height: 48px; border-radius: 0; }
 .app-brand-title { font-size: 22px; }
 .app-brand-subtitle { font-size: 11px; }
 .drink-grid,
@@ -1650,6 +1654,11 @@ color: var(--muted);
 input[type="text"],
 select { font-size: 22px; }
 }
+*,
+*::before,
+*::after {
+border-radius: 0 !important;
+}
 </style>
 </head>
 <body>
@@ -1657,7 +1666,7 @@ select { font-size: 22px; }
 <main>
 <section class="order-form" aria-label="Order form">
 <header class="app-brand" aria-label="Kopi Run">
-<img class="app-logo" src="assets/kopi-run-logo.png" alt="Kopi Run logo">
+<img class="app-logo" src="assets/otter merlion.png" alt="Kopi Run logo">
 <div class="app-brand-text">
 <div class="app-brand-title">Kopi Run</div>
 <div class="app-brand-subtitle">Never miss any kopitiam order again</div>
@@ -1824,7 +1833,7 @@ select { font-size: 22px; }
 </div>
 </div>
 <footer class="brand-footer">
-<div class="brand-lockup"><img class="brand-logo" src="assets/kopi-run-logo.png" alt="" aria-hidden="true"><h1>Kopi Run</h1></div>
+<div class="brand-lockup"><img class="brand-logo" src="assets/otter merlion.png" alt="" aria-hidden="true"><h1>Kopi Run</h1></div>
 <p>Never miss any kopitiam order again</p>
 </footer>
 </section>
