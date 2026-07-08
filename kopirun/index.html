@@ -1659,6 +1659,12 @@ select { font-size: 22px; }
 *::after {
 border-radius: 0 !important;
 }
+button.active {
+position: relative;
+z-index: 5;
+transform: scale(1.2) !important;
+transform-origin: center;
+}
 </style>
 </head>
 <body>
@@ -1985,12 +1991,15 @@ translationAutoOffTimer = setTimeout(() => setLegendMode(false), 3000);
 }
 }
 function setActiveButton(groupClass, clickedButton) {
+const wasActive = clickedButton.classList.contains('active');
 document.querySelectorAll(`.${groupClass}`).forEach(button => button.classList.remove('active', 'just-selected'));
+if (wasActive) return false;
 clickedButton.classList.add('active');
 if (clickedButton.classList.contains('drink-card')) {
 clickedButton.classList.add('just-selected');
 setTimeout(() => clickedButton.classList.remove('just-selected'), 220);
 }
+return true;
 }
 function enterSpotlight(target) {
 if (target === 'history') {
@@ -2032,6 +2041,12 @@ return;
 enterSpotlight(target === 'counter' ? 'summary' : 'checklist');
 }
 function setBase(button) {
+if (button.classList.contains('active')) {
+resetOrderForm();
+updateLegendVisibility();
+markFormChanged();
+return;
+}
 state.base = button.dataset.base;
 state.thickness = null;
 state.milk = null;
@@ -2343,6 +2358,22 @@ document.getElementById('historyToggle').setAttribute('aria-expanded', String(!h
 }
 document.querySelectorAll('.base').forEach(button => button.addEventListener('click', () => setBase(button)));
 document.querySelectorAll('.thickness').forEach(button => button.addEventListener('click', () => {
+if (button.classList.contains('active')) {
+state.thickness = null;
+state.milk = null;
+state.sugar = null;
+resetButtons('thickness');
+resetButtons('milk');
+resetButtons('sugar');
+hideStep(milkSection);
+hideStep(sugarSection);
+hideStep(nameSection);
+hideStep(actionSection);
+nameInput.value = '';
+markFormChanged();
+updateFlowDimming();
+return;
+}
 state.thickness = button.dataset.thickness;
 setActiveButton('thickness', button);
 revealStep(milkSection);
@@ -2357,6 +2388,19 @@ nameInput.value = '';
 markFormChanged();
 }));
 document.querySelectorAll('.milk').forEach(button => button.addEventListener('click', () => {
+if (button.classList.contains('active')) {
+state.milk = null;
+state.sugar = null;
+resetButtons('milk');
+resetButtons('sugar');
+hideStep(sugarSection);
+hideStep(nameSection);
+hideStep(actionSection);
+nameInput.value = '';
+markFormChanged();
+updateFlowDimming();
+return;
+}
 state.milk = button.dataset.milk;
 setActiveButton('milk', button);
 revealStep(sugarSection);
@@ -2368,6 +2412,16 @@ nameInput.value = '';
 markFormChanged();
 }));
 document.querySelectorAll('.sugar').forEach(button => button.addEventListener('click', () => {
+if (button.classList.contains('active')) {
+state.sugar = null;
+resetButtons('sugar');
+hideStep(nameSection);
+hideStep(actionSection);
+nameInput.value = '';
+markFormChanged();
+updateFlowDimming();
+return;
+}
 state.sugar = button.dataset.sugar;
 setActiveButton('sugar', button);
 revealStep(nameSection);
@@ -2375,6 +2429,20 @@ requestAnimationFrame(() => nameInput.focus());
 markFormChanged();
 }));
 document.querySelectorAll('.milo-thickness').forEach(button => button.addEventListener('click', () => {
+if (button.classList.contains('active')) {
+state.thickness = null;
+state.sugar = null;
+resetButtons('milo-thickness');
+resetButtons('milo-sugar');
+hideStep(miloSugarSection);
+hideStep(remarkSection);
+hideStep(nameSection);
+hideStep(actionSection);
+nameInput.value = '';
+markFormChanged();
+updateFlowDimming();
+return;
+}
 state.thickness = button.dataset.miloThickness;
 state.sugar = null;
 setActiveButton('milo-thickness', button);
@@ -2387,6 +2455,17 @@ nameInput.value = '';
 markFormChanged();
 }));
 document.querySelectorAll('.milo-sugar').forEach(button => button.addEventListener('click', () => {
+if (button.classList.contains('active')) {
+state.sugar = null;
+resetButtons('milo-sugar');
+hideStep(remarkSection);
+hideStep(nameSection);
+hideStep(actionSection);
+nameInput.value = '';
+markFormChanged();
+updateFlowDimming();
+return;
+}
 state.sugar = button.dataset.miloSugar;
 setActiveButton('milo-sugar', button);
 revealStep(remarkSection);
