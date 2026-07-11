@@ -1,6 +1,6 @@
 {
-  "name": "Micro:Bit Face Tracking Controller",
-  "short_name": "Face Bit",
+  "name": "HeadSpace",
+  "short_name": "HeadSpace",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#2e2118",

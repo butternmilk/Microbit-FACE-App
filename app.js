@@ -95,6 +95,7 @@ const els = {
 const ctx = els.canvas.getContext("2d");
 const metricEls = new Map();
 const encoder = new TextEncoder();
+let noticeTimer = null;
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
@@ -160,8 +161,19 @@ function setStatus(text, tone = "") {
 }
 
 function setNotice(message) {
+  if (noticeTimer) {
+    clearTimeout(noticeTimer);
+    noticeTimer = null;
+  }
   els.supportNotice.hidden = !message;
   els.supportNotice.textContent = message || "";
+  if (message) {
+    noticeTimer = setTimeout(() => {
+      els.supportNotice.hidden = true;
+      els.supportNotice.textContent = "";
+      noticeTimer = null;
+    }, 5000);
+  }
 }
 
 function buildMetricGrid() {
